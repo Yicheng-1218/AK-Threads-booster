@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "purpose": "Schema notes for compiled memory files generated from threads_daily_tracker.json.",
+    "source_of_truth": "threads_daily_tracker.json",
+    "generated_files": [
+      "compiled/account_wiki.md",
+      "compiled/post_feature_index.jsonl",
+      "compiled/cluster_wiki.json",
+      "compiled/exemplar_bank.md",
+      "compiled/recent_window.md"
+    ]
+  },
+  "shared_metadata": {
+    "generated_at": "ISO-8601 timestamp",
+    "source_tracker_hash": "sha256 of tracker JSON bytes",
+    "posts_count": "number of posts included",
+    "confidence_level": "Directional | Weak | Usable | Strong | Deep",
+    "coverage_notes": "short text explaining missing metrics or sparse data"
+  },
+  "post_feature_index_jsonl": {
+    "first_line": {
+      "_meta": "shared metadata object"
+    },
+    "one_line_per_post": {
+      "id": "string",
+      "created_at": "ISO-8601 timestamp or null",
+      "summary": "short one-sentence post summary",
+      "text_excerpt": "first 180 characters, for identification only",
+      "content_type": "string or null",
+      "hook_type": "string or null",
+      "ending_type": "string or null",
+      "emotional_arc": "string or null",
+      "word_count": "integer",
+      "paragraph_count": "integer",
+      "topics": ["string"],
+      "semantic_cluster": "string or null",
+      "freshness_score": "integer or null",
+      "fatigue_risk": "low | medium | high | null",
+      "metrics": {
+        "views": "integer or null",
+        "likes": "integer or null",
+        "replies": "integer or null",
+        "reposts": "integer or null",
+        "shares": "integer or null"
+      },
+      "source_post_id": "same as id"
+    }
+  },
+  "cluster_wiki_json": {
+    "clusters": [
+      {
+        "cluster": "string",
+        "post_count": "integer",
+        "last_post_at": "ISO-8601 timestamp or null",
+        "recent_count": "integer",
+        "median_views": "number or null",
+        "top_post_ids": ["string"],
+        "representative_post_ids": ["string"],
+        "common_topics": ["string"],
+        "fatigue_risk": "low | medium | high | unknown",
+        "notes": "short text"
+      }
+    ]
+  },
+  "reason_strip_when": {
+    "reason": "Compiled memory lets daily runs use source-linked historical summaries instead of repeatedly loading the full tracker.",
+    "strip_when": "The tracker is moved to a queryable store with cheap filtered retrieval, or agent token limits stop being a meaningful constraint."
+  }
+}

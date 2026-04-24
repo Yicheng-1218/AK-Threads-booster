@@ -12,12 +12,17 @@ Working directory root: `threads_booster_config.json`. If absent, all skills use
 
 ```json
 {
+  "runtime": {
+    "depth": "lite | standard | deep",
+    "compiled_memory": "prefer | require_fresh | off"
+  },
   "draft": {
     "discussion_mode": "ask | always_on | always_off",
     "research_angle_expansion": true
   },
   "analyze": {
-    "discussion_mode": "ask | always_on | always_off"
+    "discussion_mode": "ask | always_on | always_off",
+    "output_mode": "brief | standard | full"
   },
   "review": {
     "discussion_mode": "ask | always_on | always_off"
@@ -31,8 +36,15 @@ When a key is absent:
 
 | Key | Default | Meaning |
 |---|---|---|
+| `runtime.depth` | `"standard"` | Use compiled memory + quick cards by default; `lite` is stricter, `deep` loads full sources as needed |
+| `runtime.compiled_memory` | `"prefer"` | Prefer `compiled/` files, but fall back to tracker when missing or stale |
 | `*.discussion_mode` | `"ask"` | Prompt the user once per skill, persist their answer |
 | `draft.research_angle_expansion` | `true` | During research, surface angles the user may not have considered |
+| `analyze.output_mode` | `"brief"` | Save output tokens by default; `full` restores the complete 11-section report |
+
+## Runtime Budget
+
+Canonical runtime-budget semantics live in `knowledge/_shared/runtime-budget.md`. Any skill that reads `runtime.depth`, `runtime.compiled_memory`, or `analyze.output_mode` must link there rather than restating the full policy.
 
 ## `discussion_mode` — canonical semantics
 
@@ -54,7 +66,7 @@ These rules apply identically to `/draft`, `/analyze`, `/review`:
 
 Only `/draft` has `Write` in its `allowed-tools` among skills using this config. Therefore:
 
-- **Only `/draft` writes `threads_booster_config.json`.** If a user tells `/analyze` or `/review` "always off", those skills must not write the file — instead, acknowledge the preference for the current run and tell the user: *"To make this permanent, tell `/draft` (which can write the config), or edit `threads_booster_config.json` directly."*
+- **Only `/draft` writes `threads_booster_config.json`.** If a user tells `/analyze` or `/review` "always off", "always brief", "use lite", or similar, those skills must not write the file — instead, acknowledge the preference for the current run and tell the user: *"To make this permanent, tell `/draft` (which can write the config), or edit `threads_booster_config.json` directly."*
 - When `/draft` persists a choice, it writes only the changed key, preserving all other existing keys. If the file does not exist, `/draft` creates it with just that key set.
 
 ## reason + strip_when
@@ -64,6 +76,9 @@ Only `/draft` has `Write` in its `allowed-tools` among skills using this config.
 | `discussion_mode` toggle | Users differ: some want deep dialogue, some want fast output. A single default alienates one group. | Product telemetry shows >95% of users keep the same mode → remove the toggle and adopt that mode as fixed behavior. |
 | `research_angle_expansion` toggle | Surfaced angles occasionally derail users who already know what they want to say. Opt-out exists for that case. | If post-publish data shows accepted angles consistently lift performance, flip default to always-on and remove the toggle. |
 | `ask` mode | Reduces friction for new users who don't yet know which mode fits them. | After 2-3 skill invocations, most users have converged — if logs show `ask` mode rarely persists beyond N runs, collapse to a binary default + one setup question. |
+| `runtime.depth` | Different agents have different token budgets; the skill needs a predictable way to trade depth for cost. | Low-allowance agents stop being a practical constraint, or compiled retrieval replaces manual depth selection. |
+| `runtime.compiled_memory` | Lets daily runs use source-linked summaries while preserving tracker fallback. | Tracker moves to a queryable store with cheap filtered reads. |
+| `analyze.output_mode` | Many users need the decision layer more than the full report; output tokens are part of the cost. | Users consistently choose `full`, or the product UI can collapse unneeded sections without generation cost. |
 
 ## Conflict Resolution
 

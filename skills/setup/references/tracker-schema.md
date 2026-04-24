@@ -1,12 +1,14 @@
+# v1 Tracker Schema (`/setup` Step 2)
+
+Regardless of import path, the result must be a valid `threads_daily_tracker.json` in this shape. Template reference: Glob `**/templates/tracker-template.json`.
+
+---
+
+```json
 {
   "schema_version": 1,
-  "_meta": {
-    "schema_version_notes": "Bump on breaking changes (required field added, field renamed, field type changed). Additive optional fields do not bump.",
-    "generated_by": "ak-threads-booster",
-    "template_version": "1.0.0"
-  },
   "account": {
-    "handle": "@your_threads_handle",
+    "handle": "@example",
     "source": "api",
     "timezone": "Asia/Bangkok"
   },
@@ -14,15 +16,12 @@
     {
       "id": "post_id",
       "text": "Post content",
-      "created_at": "2026-04-01T09:00:00+07:00",
+      "created_at": "ISO timestamp",
       "permalink": "",
       "media_type": "TEXT",
       "is_reply_post": false,
       "content_type": "opinion",
-      "topics": [
-        "threads",
-        "growth"
-      ],
+      "topics": ["threads", "growth"],
       "hook_type": null,
       "ending_type": null,
       "emotional_arc": null,
@@ -89,18 +88,7 @@
         "72h": null,
         "7d": null
       },
-      "snapshots": [
-        {
-          "captured_at": "2026-04-01T12:00:00+07:00",
-          "hours_since_publish": 3,
-          "views": 1200,
-          "likes": 85,
-          "replies": 9,
-          "reposts": 3,
-          "quotes": 0,
-          "shares": 0
-        }
-      ],
+      "snapshots": [],
       "prediction_snapshot": null,
       "review_state": {
         "last_reviewed_at": null,
@@ -121,7 +109,7 @@
         {
           "user": "username",
           "text": "Comment content",
-          "created_at": "2026-04-01T10:00:00+07:00",
+          "created_at": "ISO timestamp",
           "likes": 0
         }
       ],
@@ -131,5 +119,20 @@
       }
     }
   ],
-  "last_updated": "2026-04-01T12:00:00+07:00"
+  "last_updated": "ISO timestamp"
 }
+```
+
+---
+
+## Required core fields
+
+- `id` · `text` · `created_at` · `metrics` · `comments` · `content_type` · `topics`
+
+## Optional enriched fields
+
+- `hook_type` · `ending_type` · `emotional_arc` · `word_count` · `paragraph_count` · `posting_time_slot` · `performance_windows` · `snapshots` · `prediction_snapshot` · `algorithm_signals` · `psychology_signals` · `review_state` · `source`
+
+If enriched fields are missing, leave them `null` and allow downstream modules to derive temporary values.
+
+After import, read the file, verify it is structurally valid, and report the number of imported posts.

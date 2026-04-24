@@ -1,6 +1,7 @@
 ---
 name: ak-threads-booster
 description: "Threads growth operating system for topic selection, drafting, analysis, prediction, review, and tracker refresh based on the user's own post history."
+version: "1.2.0"
 allowed-tools: Read, Glob, Grep
 ---
 
@@ -33,6 +34,7 @@ Each sub-skill is located via `Glob **/skills/<name>/SKILL.md` so resolution wor
 - Review actual post performance / compare against prediction -> Glob `**/skills/review/SKILL.md`
 - Mine next topics / topic suggestions / 選題 -> Glob `**/skills/topics/SKILL.md`
 - Build brand voice / voice analysis -> Glob `**/skills/voice/SKILL.md`
+- Optimize the skill itself / compound pass / 優化skill / 自我優化 / 閉環 (turn `threads_skill_learnings.log` misses into rule edits) -> Glob `**/skills/optimize/SKILL.md`
 
 ## Routing Rules
 
@@ -62,6 +64,56 @@ Look in the working directory for:
 - `threads_freshness.log` - audit log for `/draft` and `/topics` freshness gates, read by `/review`
 - `threads_refresh.log` - audit log for `/refresh` runs, read by `/review`
 
+Low-token runtime also looks for derived compiled memory in `compiled/`:
+
+- `compiled/account_wiki.md`
+- `compiled/post_feature_index.jsonl`
+- `compiled/cluster_wiki.json`
+- `compiled/exemplar_bank.md`
+- `compiled/recent_window.md`
+
+These files are runtime caches only. `threads_daily_tracker.json` remains the source of truth. If compiled memory is missing, stale, or contradicts the tracker, fall back to the tracker and recommend rebuilding compiled memory.
+
 If legacy Chinese companion filenames already exist, treat them as equivalent companion files instead of forcing a rename.
 
 If only the tracker exists, continue in tracker-only fallback mode when the chosen module allows it. If the tracker is missing, do not pretend the work is data-backed - ask for fallback history or use `/setup`.
+
+## Tools Surface
+
+This main `SKILL.md` declares only the read-only tools it actually uses (`Read, Glob, Grep`). Each sub-skill declares its own `allowed-tools` in its frontmatter; some require more:
+
+- `/draft` adds `Write, WebSearch, WebFetch`
+- `/review` adds `Write, Edit`
+- `/voice`, `/setup`, `/refresh` each extend the surface as needed
+
+When auditing permissions, inspect the union of all sub-skill frontmatters, not just this file.
+
+## Persistent-State Policy
+
+Any sub-skill that writes to `threads_daily_tracker.json`, `style_guide.md`, `concept_library.md`, `brand_voice.md`, or `threads_booster_config.json` must follow `templates/FAILSAFE.md` (backup + atomic rename + keep last 5 backups). Append-only logs (`threads_freshness.log`, `threads_refresh.log`, `threads_skill_learnings.log`) follow the append-only rules in the same file.
+
+Compiled memory files under `compiled/` are rebuilt views, not hand-edited state. Rebuild them with `scripts/build_compiled_memory.py` after tracker-changing runs.
+
+## Shared Knowledge
+
+Red-line (R) and signal (S) definitions live in `knowledge/_shared/red-lines.md` — the single source of truth for both `/analyze` and `/draft`. Do not inline R-lists in sub-skill SKILL.md files.
+
+Runtime depth, compiled-memory behavior, and output-mode defaults live in `knowledge/_shared/runtime-budget.md`. In `lite` and `standard`, use `knowledge/cards/*` before full `knowledge/*.md` files.
+
+Compound loop schema — `threads_skill_learnings.log` — is defined in `knowledge/_shared/compound-log-format.md`. `/review` writes misses to it; `/optimize` reads it, proposes rule changes, and appends `supersedes` entries when the user approves edits. No other sub-skill touches the log.
+
+## Precedence and Conflicts
+
+When guidance conflicts, use this order:
+
+1. This main `SKILL.md` — routing and global discipline
+2. Sub-skill `skills/<name>/SKILL.md` — module-specific workflow
+3. `knowledge/_shared/*.md` — definitions referenced by multiple sub-skills (red-lines, config, discovery, principles, runtime-budget, compound-log-format)
+4. `knowledge/*.md` — deeper knowledge bases (psychology, algorithm, ai-detection, data-confidence, chrome-selectors)
+5. `templates/*` — shape templates (tracker, style-guide, concept-library, FAILSAFE)
+
+Rules earlier in this list win. If a sub-skill rule contradicts the main SKILL.md (e.g. routes `/analyze` requests to `/draft`), the main SKILL.md wins and the sub-skill is the drift — fix the sub-skill.
+
+A known cross-sub-skill conflict and its resolution:
+
+- **`brand_voice.md` usage.** `/draft` treats it as a composition driver. Every other sub-skill treats it as observation-only. This is stated here (Routing Rules #7) and re-stated in each sub-skill's Scope section. If those ever disagree, this file wins.

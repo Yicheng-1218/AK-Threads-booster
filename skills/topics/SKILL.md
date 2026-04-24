@@ -1,6 +1,7 @@
 ---
 name: topics
 description: "Mine insights from comments and historical data to recommend the next worthwhile topics. Trigger words: 'topics', 'topic', '選題', '寫什麼'."
+version: "1.1.0"
 allowed-tools: Read, Grep, Glob, WebSearch
 ---
 
@@ -16,9 +17,12 @@ The goal is not to chase generic traffic. The goal is to find topics that fit th
 
 Load `knowledge/_shared/principles.md` before recommending. Follow discovery order in `knowledge/_shared/discovery.md`. For `/topics`, also load:
 
-- `psychology.md`
-- `algorithm.md`
+- `_shared/config.md` and `_shared/runtime-budget.md`
+- `psychology-card.md`
+- `algorithm-card.md`
 - `data-confidence.md`
+
+Load full `psychology.md` or `algorithm.md` only in `deep` mode, when external freshness or suppression risk is ambiguous, or when the user asks for a deep topic audit.
 
 Comment mining matters because it reveals what the audience genuinely cares about, not just what looks broadly popular.
 
@@ -29,6 +33,10 @@ Comment mining matters because it reveals what the audience genuinely cares abou
 Search the working directory for:
 
 - `threads_daily_tracker.json`
+- `compiled/account_wiki.md`
+- `compiled/post_feature_index.jsonl`
+- `compiled/cluster_wiki.json`
+- `compiled/recent_window.md`
 - `style_guide.md`
 - `concept_library.md`
 
@@ -68,9 +76,11 @@ Analyze:
 - topics with the best view / reply / share behavior
 - topics with strong DM-share potential if available
 
+Use compiled memory first when fresh; read tracker details only for the clusters or source post IDs that drive the recommendation.
+
 ### Step 2.5: Read Semantic Freshness
 
-If `scripts/update_topic_freshness.py` has been run, use:
+If compiled memory exists, use `compiled/cluster_wiki.json` and `compiled/recent_window.md` first. If `scripts/update_topic_freshness.py` has been run and tracker excerpts are needed, use:
 
 - `algorithm_signals.topic_freshness.semantic_cluster`
 - `algorithm_signals.topic_freshness.freshness_score`
@@ -88,6 +98,7 @@ If those fields are null, tell the user they can run:
 
 ```bash
 python scripts/update_topic_freshness.py --tracker ./threads_daily_tracker.json
+python scripts/build_compiled_memory.py --tracker ./threads_daily_tracker.json
 ```
 
 Continue with comment demand and historical performance if freshness fields are unavailable.
