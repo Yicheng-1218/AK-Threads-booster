@@ -62,8 +62,8 @@ Chrome users can schedule `/refresh --headless`. Chrome must already be running 
 
 Verify all of the following. In headless mode each failure maps to a specific `reason` value for the log entry.
 
-1. **Chrome MCP exists** — Chrome tools in `allowed-tools` must be callable.
-   - Interactive: tell the user to install Chrome MCP.
+1. **Browser automation exists** — browser tools must be callable in the current agent environment.
+   - Interactive: tell the user to enable a supported browser automation connector or run the API path instead.
    - Headless: log `no_chrome_mcp` and exit.
 2. **Threads is logged in** — navigate to `https://www.threads.com/` and confirm the page is a logged-in feed.
    - Interactive: tell the user to log in and retry.

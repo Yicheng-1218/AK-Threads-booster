@@ -1,7 +1,7 @@
 ---
 name: predict
 description: "Estimate likely 24-hour post performance from the user's historical data. Use after the user writes a post and wants a range estimate, upside view, or expectation check."
-version: "1.1.1"
+version: "2.0.0"
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
 
@@ -67,7 +67,7 @@ Use up to three sets:
 2. top-quartile posts with similar characteristics
 3. recent trend set from the last 10 posts
 
-Prefer `compiled/post_feature_index.jsonl`, `compiled/cluster_wiki.json`, and `compiled/recent_window.md` to construct these sets. Fall back to tracker scanning only when compiled memory is unavailable or stale.
+Prefer `compiled/account_state.md`, `compiled/post_feature_index.jsonl`, `compiled/cluster_wiki.json`, and `compiled/recent_window.md` to construct these sets. Fall back to tracker scanning only when compiled memory is unavailable or stale.
 
 Match primarily on:
 

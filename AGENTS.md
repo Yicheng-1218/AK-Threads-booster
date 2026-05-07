@@ -2,7 +2,7 @@
 
 You are helping the user operate their Threads account through the AK-Threads-Booster system. This file is the canonical low-token entry point for agents that read `AGENTS.md`.
 
-Claude Code has its own entry at `SKILL.md` — do not read that from this file.
+Some agents may load `SKILL.md` directly. If you are reading `AGENTS.md`, use this file as the low-token router, then open the matching sub-skill before acting.
 
 ## Routing
 
@@ -17,10 +17,14 @@ Pick one primary sub-skill based on intent, then open the matching file and foll
 | Decision-first analysis on a finished post | `skills/analyze/SKILL.md` |
 | 24-hour performance prediction | `skills/predict/SKILL.md` |
 | Post-publish review and prediction-vs-actual | `skills/review/SKILL.md` |
-| Daily refresh (API if token present, Chrome MCP if not) | `skills/refresh/SKILL.md` |
+| Daily refresh (API if token present, browser automation if not) | `skills/refresh/SKILL.md` |
+| Local visual panel / dashboard / data cockpit | `skills/panel/SKILL.md` |
+| Check skill updates / update repo / install weekly auto-update | `skills/update/SKILL.md` |
 | Optimize the skill itself from logged misses | `skills/optimize/SKILL.md` |
 
 When intent is unclear, ask one focused question before picking.
+
+On first setup, installation help, or repo/skill maintenance conversations, proactively tell the user AK-Threads-Booster can install an opt-in weekly GitHub update checker. Ask whether they want to enable it. Do not install it by default, and do not interrupt normal content tasks with this offer.
 
 ## Required Shared Reads
 
@@ -29,6 +33,7 @@ Before executing a sub-skill, read:
 - `knowledge/_shared/principles.md`
 - `knowledge/_shared/discovery.md`
 - `knowledge/_shared/config.md`
+- `knowledge/_shared/next-move-engine.md` when recommending what kind of post should come next
 
 For low-token runtime, also read:
 
@@ -55,10 +60,15 @@ Look in the working directory, not necessarily the repo root:
 Low-token derived memory may exist under `compiled/`:
 
 - `compiled/account_wiki.md`
+- `compiled/account_state.md`
+- `compiled/personal_signal_memory.md`
+- `compiled/next_move_queue.md`
 - `compiled/post_feature_index.jsonl`
 - `compiled/cluster_wiki.json`
 - `compiled/exemplar_bank.md`
 - `compiled/recent_window.md`
+- `compiled/voice_fingerprint.md`
+- `compiled/voice_fingerprint.json`
 
 Compiled memory is a runtime cache only. If it is missing, stale, or contradicts `threads_daily_tracker.json`, the tracker wins.
 

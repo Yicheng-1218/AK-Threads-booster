@@ -37,3 +37,8 @@ desktop.ini
 # Environment variables / secrets
 .env
 .env.*
+
+# Local agent/runtime caches
+.claude/
+.claude-plugin/
+.omx/

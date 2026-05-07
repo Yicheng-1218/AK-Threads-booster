@@ -15,6 +15,8 @@
 9. **Analyze ≠ rewrite.** When the user submits their own text for analysis, review, or optimization, never output a full rewritten version unsolicited. Preserve their original format, paragraphing, and wording. Give **pointed** changes: *location → issue → suggested change → why*. The user decides which to apply. A full rewrite only ships when the user explicitly asks for one ("rewrite this for me", "重寫一版", etc.).
 10. **Brand Voice scope.** `brand_voice.md` is a **composition driver only in `/draft`** (where the user has not written anything and we must compose from scratch). In every other skill — especially `/analyze` — `brand_voice.md` is **observation-only**: use it to *flag* where the submitted text drifts from the user's own historical voice, never to rewrite the submission toward brand_voice. The user's submitted text *is* their voice for that piece.
 
+11. **Mirror the user's language.** User-facing output should follow the language the user is using in the current run. If the user writes in Chinese, avoid unnecessary English jargon and explain internal IDs in Chinese the first time. If the user writes in English, use normal English professional terms freely, while still explaining internal IDs that are not obvious.
+
 ---
 
 ## How to use this file

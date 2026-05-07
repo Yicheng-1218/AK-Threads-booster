@@ -545,7 +545,7 @@ def main():
     print(f"\nDone! Saved {len(tracker['posts'])} posts to {args.output}")
     print("Note: Meta data export does not include engagement metrics.")
     print("Metrics will be populated as you use /review after publishing.")
-    print(f"\nNext step: Run /setup in Claude Code to generate your style guide and concept library.")
+    print("\nNext step: Run /setup with your agent to generate your style guide and concept library.")
 
 
 if __name__ == "__main__":

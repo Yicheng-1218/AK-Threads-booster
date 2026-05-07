@@ -1,7 +1,7 @@
 ---
 name: topics
 description: "Mine insights from comments and historical data to recommend the next worthwhile topics. Trigger words: 'topics', 'topic', '選題', '寫什麼'."
-version: "1.1.1"
+version: "2.0.0"
 allowed-tools: Read, Grep, Glob, WebSearch
 ---
 
@@ -18,6 +18,7 @@ The goal is not to chase generic traffic. The goal is to find topics that fit th
 Load `knowledge/_shared/principles.md` before recommending. Follow discovery order in `knowledge/_shared/discovery.md`. For `/topics`, also load:
 
 - `_shared/config.md` and `_shared/runtime-budget.md`
+- `_shared/next-move-engine.md`
 - `psychology-card.md`
 - `algorithm-card.md`
 - `data-confidence.md`
@@ -34,6 +35,9 @@ Search the working directory for:
 
 - `threads_daily_tracker.json`
 - `compiled/account_wiki.md`
+- `compiled/account_state.md`
+- `compiled/personal_signal_memory.md`
+- `compiled/next_move_queue.md`
 - `compiled/post_feature_index.jsonl`
 - `compiled/cluster_wiki.json`
 - `compiled/recent_window.md`
@@ -109,6 +113,7 @@ Continue with comment demand and historical performance if freshness fields are 
 
 Generate candidates using:
 
+- Next Move Engine state (`account_state`, `personal_signal_memory`, and `next_move_queue`) when available
 - recent topic distribution
 - historical performance
 - comment demand
@@ -142,6 +147,8 @@ Each `/topics` run must append one JSON line per checked candidate to `threads_f
 Do not mark a search as `performed` if it did not run.
 
 ### Step 4: Output Recommendations
+
+Start by naming the recommended next move in the user's language. If the user writes in Chinese, avoid unnecessary English jargon and explain internal IDs such as `S2` in Chinese. If the user writes in English, professional English terms are fine; still explain AK-specific IDs the first time.
 
 Recommend 3-5 topics. For each one, include:
 

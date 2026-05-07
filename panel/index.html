@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AK Threads Booster Panel</title>
+    <link rel="stylesheet" href="./styles.css?v=20260426-9" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Panel navigation" data-i18n-aria-label="sidebarAria">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">AK</div>
+          <div>
+            <p class="eyebrow" data-i18n="brandEyebrow">Local Panel</p>
+            <h1>Threads Booster</h1>
+          </div>
+        </div>
+
+        <nav class="nav-stack" aria-label="Primary" data-i18n-aria-label="primaryAria">
+          <a class="nav-item is-active" href="#overview"><span aria-hidden="true">01</span><b data-i18n="navOverview">Overview</b></a>
+          <a class="nav-item" href="#command"><span aria-hidden="true">02</span><b data-i18n="navCommand">Command</b></a>
+          <a class="nav-item" href="#diagnosis"><span aria-hidden="true">03</span><b data-i18n="navDiagnosis">Diagnosis</b></a>
+          <a class="nav-item" href="#posts"><span aria-hidden="true">04</span><b data-i18n="navPosts">Posts</b></a>
+          <a class="nav-item" href="#topics"><span aria-hidden="true">05</span><b data-i18n="navTopics">Topics</b></a>
+          <a class="nav-item" href="#signals"><span aria-hidden="true">06</span><b data-i18n="navSignals">Signals</b></a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <p class="muted" data-i18n="source">Source</p>
+          <strong id="sourceLabel">Sample data</strong>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section class="topbar" aria-label="Workspace controls" data-i18n-aria-label="topbarAria">
+          <div>
+            <p class="eyebrow" data-i18n="topEyebrow">Decision-first account view</p>
+            <h2 data-i18n="topTitle">Content cockpit</h2>
+          </div>
+
+          <div class="control-row">
+            <button class="icon-button" id="languageToggle" type="button" title="Switch language" data-i18n-title="languageTitle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></svg>
+              <span id="languageLabel">EN</span>
+            </button>
+            <button class="icon-button" id="folderButton" type="button" title="Open workspace folder" data-i18n-title="folderTitle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6L11 7h7.5A2.5 2.5 0 0 1 21 9.5v8A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5z"/></svg>
+              <span data-i18n="folder">Folder</span>
+            </button>
+            <label class="icon-button file-button" title="Import tracker JSON" data-i18n-title="trackerTitle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4c-2.5 0-3 1.4-3 3v2c0 1.1-.9 2-2 2c1.1 0 2 .9 2 2v2c0 1.6.5 3 3 3"/><path d="M15 4c2.5 0 3 1.4 3 3v2c0 1.1.9 2 2 2c-1.1 0-2 .9-2 2v2c0 1.6-.5 3-3 3"/></svg>
+              <span data-i18n="tracker">Tracker</span>
+              <input id="trackerInput" type="file" accept=".json,application/json" />
+            </label>
+            <button class="icon-button primary" id="sampleButton" type="button" title="Reload sample data" data-i18n-title="sampleTitle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.6 4.6L18 9l-4.4 1.4L12 15l-1.6-4.6L6 9l4.4-1.4z"/><path d="M19 14.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg>
+              <span data-i18n="sample">Sample</span>
+            </button>
+            <button class="icon-button" id="rebuildButton" type="button" title="Rebuild compiled memory" data-i18n-title="rebuildTitle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.3"/><path d="M21 4v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3"/><path d="M3 20v-5h5"/></svg>
+              <span data-i18n="rebuild">Rebuild</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="hero-band" id="overview">
+          <div class="hero-copy">
+            <p class="eyebrow" data-i18n="heroEyebrow">AK local intelligence</p>
+            <h2 data-i18n="heroTitle">AK Threads Data Panel</h2>
+            <p id="accountSummary">Local data loaded.</p>
+          </div>
+          <div class="hero-metrics" aria-label="Account metrics" data-i18n-aria-label="metricsAria">
+            <div class="metric" data-metric="posts"></div>
+            <div class="metric" data-metric="views"></div>
+            <div class="metric" data-metric="engagement"></div>
+          </div>
+        </section>
+
+        <section class="metric-grid" aria-label="Performance summary" data-i18n-aria-label="summaryAria">
+          <article class="metric-card"><p class="eyebrow" data-i18n="bestPost">Best post</p><h3 id="bestPostTitle">-</h3><p id="bestPostMeta" class="muted">No post loaded</p></article>
+          <article class="metric-card"><p class="eyebrow" data-i18n="bestTopic">Strongest topic</p><h3 id="bestTopicTitle">-</h3><p id="bestTopicMeta" class="muted">No topic loaded</p></article>
+          <article class="metric-card"><p class="eyebrow" data-i18n="recentWindow">Recent window</p><h3 id="recentTitle">-</h3><p id="recentMeta" class="muted">No recent posts</p></article>
+        </section>
+
+        <section class="command-panel" id="command">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow" data-i18n="commandEyebrow">Command center</p>
+              <h2 data-i18n="commandTitle">What the user wants to know first</h2>
+            </div>
+          </div>
+          <div class="command-grid">
+            <article class="command-card wide">
+              <div class="section-header compact">
+                <div>
+                  <p class="eyebrow" data-i18n="growthEyebrow">Account growth</p>
+                  <h3 data-i18n="growthTitle">Tracked view curve</h3>
+                </div>
+              </div>
+              <div class="account-growth-chart" id="accountGrowthChart"></div>
+            </article>
+            <article class="command-card">
+              <p class="eyebrow" data-i18n="quickReadEyebrow">Quick read</p>
+              <div class="executive-cards" id="executiveCards"></div>
+            </article>
+            <article class="command-card next-move-panel">
+              <p class="eyebrow" data-i18n="nextMoveQueue">Next move queue</p>
+              <div class="next-move-cards" id="nextMoveCards"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel-surface" id="diagnosis">
+          <div class="section-header">
+            <div><p class="eyebrow" data-i18n="diagnosisEyebrow">Account diagnosis</p><h2 data-i18n="diagnosisTitle">What the data says</h2></div>
+          </div>
+          <div class="insight-grid" id="insightGrid"></div>
+        </section>
+
+        <section class="analysis-grid">
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="trendEyebrow">Trend</p><h2 data-i18n="trendTitle">Recent momentum</h2></div></div><div class="trend-chart" id="trendChart"></div></article>
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="performanceEyebrow">Performance ladder</p><h2 data-i18n="performanceTitle">Distribution</h2></div></div><div class="bar-list" id="performanceBars"></div></article>
+        </section>
+
+        <section class="analysis-grid">
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="timeEyebrow">Posting time</p><h2 data-i18n="timeTitle">Best slots</h2></div></div><div class="rank-list" id="timeSlotList"></div></article>
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="contentMixEyebrow">Content mix</p><h2 data-i18n="contentMixTitle">Formats</h2></div></div><div class="rank-list" id="contentTypeList"></div></article>
+        </section>
+
+        <section class="analysis-grid">
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="conversationEyebrow">Conversation</p><h2 data-i18n="conversationTitle">Reply signals</h2></div></div><div class="rank-list" id="conversationList"></div></article>
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="topPostsEyebrow">Winners</p><h2 data-i18n="topPostsTitle">Top posts</h2></div></div><div class="rank-list" id="topPostList"></div></article>
+        </section>
+
+        <section class="split-layout">
+          <article class="panel-surface" id="posts">
+            <div class="section-header">
+              <div><p class="eyebrow" data-i18n="postLibrary">Post library</p><h2 data-i18n="allPosts">All posts</h2></div>
+              <select id="sortSelect" aria-label="Sort posts" data-i18n-aria-label="sortAria">
+                <option value="date" data-i18n="sortNewest">Newest</option>
+                <option value="views" data-i18n="sortViews">Views</option>
+                <option value="engagement" data-i18n="sortEngagement">Engagement</option>
+                <option value="replies" data-i18n="sortReplies">Replies</option>
+              </select>
+            </div>
+            <div class="filter-bar">
+              <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Search posts" />
+              <select id="topicFilter" data-i18n-aria-label="topicFilterAria" aria-label="Topic filter"></select>
+              <select id="typeFilter" data-i18n-aria-label="typeFilterAria" aria-label="Content type filter"></select>
+              <select id="dateFilter" data-i18n-aria-label="dateFilterAria" aria-label="Date filter">
+                <option value="all" data-i18n="dateAll">All time</option>
+                <option value="30" data-i18n="date30">Last 30 days</option>
+                <option value="90" data-i18n="date90">Last 90 days</option>
+              </select>
+            </div>
+            <div class="post-list" id="postList"></div>
+          </article>
+
+          <aside class="panel-surface detail-panel" aria-label="Selected post" data-i18n-aria-label="selectedAria">
+            <div class="section-header compact"><div><p class="eyebrow" data-i18n="selectedPost">Selected post</p><h2 id="detailTitle">No post selected</h2></div></div>
+            <p id="detailText" class="post-text">Choose a post from the list.</p>
+            <div class="detail-stats" id="detailStats"></div>
+            <div class="detail-meta" id="detailMeta"></div>
+            <div class="snapshot-chart" id="snapshotChart"></div>
+            <div class="ai-actions">
+              <button type="button" data-ai-action="analyze" data-i18n="analyze">Analyze</button>
+              <button type="button" data-ai-action="predict" data-i18n="predict">Predict</button>
+              <button type="button" data-ai-action="review" data-i18n="review">Review</button>
+            </div>
+            <textarea id="aiPromptBox" class="prompt-box" readonly data-i18n-placeholder="promptPlaceholder" placeholder="AI action prompt appears here."></textarea>
+          </aside>
+        </section>
+
+        <section class="analysis-grid">
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="weakPostsEyebrow">Needs review</p><h2 data-i18n="weakPostsTitle">Low performers</h2></div></div><div class="rank-list" id="weakPostList"></div></article>
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="semanticField">Semantic field</p><h2 data-i18n="topicMap">Topic map</h2></div></div><div class="topic-cloud" id="topicCloud"></div></article>
+        </section>
+
+        <section class="panel-surface" id="topics">
+          <div class="section-header"><div><p class="eyebrow" data-i18n="topicTableHead">Topic ranking</p><h2 data-i18n="topicMap">Topic map</h2></div></div>
+          <div class="data-table" id="topicTable"></div>
+        </section>
+
+        <section class="lower-grid" id="signals">
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="nextMoveQueue">Next move queue</p><h2 data-i18n="moves">Moves</h2></div></div><div class="markdown-box" id="nextMoveBox">No compiled next move file loaded.</div></article>
+          <article class="panel-surface"><div class="section-header compact"><div><p class="eyebrow" data-i18n="accountState">Account state</p><h2 data-i18n="signals">Signals</h2></div></div><div class="markdown-box" id="accountStateBox">No compiled account state file loaded.</div></article>
+        </section>
+
+        <section class="panel-surface" id="companions">
+          <div class="section-header"><div><p class="eyebrow" data-i18n="companionEyebrow">Companion files</p><h2 data-i18n="companionTitle">Readable archives</h2></div></div>
+          <div class="companion-grid">
+            <article class="companion-card"><p class="eyebrow" data-i18n="postsByDate">By date</p><div class="markdown-box compact-box" id="postsByDateBox">No post-by-date archive loaded.</div></article>
+            <article class="companion-card"><p class="eyebrow" data-i18n="postsByTopic">By topic</p><div class="markdown-box compact-box" id="postsByTopicBox">No post-by-topic archive loaded.</div></article>
+            <article class="companion-card"><p class="eyebrow" data-i18n="commentsFile">Comments</p><div class="markdown-box compact-box" id="commentsBox">No comments archive loaded.</div></article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js?v=20260426-9"></script>
+  </body>
+</html>

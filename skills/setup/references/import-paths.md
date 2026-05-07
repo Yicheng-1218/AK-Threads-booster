@@ -89,7 +89,7 @@ python scripts/parse_export.py \
 
 ### B.4 Known limitations
 
-- No engagement metrics (views / likes / replies / reposts / shares) — must be backfilled by `/review` checkpoints or `/refresh` (Chrome MCP).
+- No engagement metrics (views / likes / replies / reposts / shares) — must be backfilled by `/review` checkpoints or `/refresh` through browser automation.
 - Exports are point-in-time. For fresh comments and metrics later, repeat the export (rate-limited to one per ~3 days), or switch to the API / `/refresh` path.
 - Very old posts may lack metadata; the parser leaves those fields `null`.
 
@@ -108,11 +108,11 @@ At minimum, capture post text and creation date. If metrics are missing, leave t
 
 ---
 
-## Path D: Chrome-driven profile scrape (no API, no export wait)
+## Path D: Browser-driven profile scrape (no API, no export wait)
 
-If the user has `Claude in Chrome` MCP installed and is logged into Threads in Chrome, `/refresh` can scrape their profile directly.
+If the user has browser automation available and is logged into Threads, `/refresh` can scrape their profile directly.
 
-1. Verify Chrome MCP is active in the current session.
+1. Verify browser automation is active in the current session.
 2. Run `/refresh` with the user's Threads handle.
 3. `/refresh` creates or updates `threads_daily_tracker.json` with visible posts and metrics.
 

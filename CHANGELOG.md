@@ -1,244 +1,312 @@
 # Changelog
 
-What changed in AK-Threads-Booster, in plain language.
+What changed in AK體, in plain language.
 
 ---
 
-## 2026-04-24 — 低 Token Runtime：讓日常分析更省、更快、也更不容易把用量燒完
+## 2026-05-07 - AK-Threads-Booster 2.0 正式版
 
-這次更新的核心，是讓 AK-Threads-Booster 不再每次都把完整歷史資料和大型知識庫重新讀一遍。對用量比較少的 Agent 訂閱者來說，這會明顯降低日常使用成本，讓他們不會分析一兩篇貼文就把額度花完。
+AK體 2.0 把系統從「Threads 發文 skill」升級成更完整的個人內容決策作業系統：低 token compiled memory、Next Move Engine、本地面板、Voice Fingerprint、`/draft` 作戰包、安全 `/update`，以及全 agent 通用安裝入口都放進正式版。
 
-### 新增 `compiled/` 低 token 記憶層
+這版的重點不是把輸出變長，而是讓日常使用更省 token、更穩、更像用戶本人，也更容易交給任何支援 repo instructions / skill directory 的 agent 使用。
 
-`/setup`、`/refresh`、`/review`、`/predict` 現在會在 tracker 更新後重建一組低 token runtime cache：
+### 全 agent 通用入口
 
-- `compiled/account_wiki.md`
-- `compiled/post_feature_index.jsonl`
-- `compiled/cluster_wiki.json`
-- `compiled/exemplar_bank.md`
-- `compiled/recent_window.md`
+- `AGENTS.md` 是低 token agent router。
+- `SKILL.md` 保留給會讀 skill metadata 的 agent。
+- 移除特定 agent 平台專屬的 plugin metadata 與安裝說明。
+- GitHub / GitLab README 會分別使用對應平台的安裝 URL。
 
-這些檔案不是新的真相來源，而是從 `threads_daily_tracker.json` 編譯出來的「AI 快速索引」。日常 `/analyze`、`/topics`、`/predict` 可以先讀這些摘要與特徵，不需要每次掃整份歷史貼文。
+### `/voice` 升級成創作基因蒸餾
 
-### Tracker 仍然是唯一真相
+`/voice` 從「讀完整 tracker 後直接分析文風」升級成兩段式蒸餾：本地腳本先做確定性統計，AI 再負責認知層、張力、禁區與 `/draft` 可用化。目的不是產出更長的 Brand Voice，而是讓 `/draft` 更像用戶本人會想、會切、會寫。
 
-為了避免 wiki 變舊導致 AI 自信地錯，所有 compiled memory 都會帶 `generated_at`、`source_tracker_hash`、`posts_count`、`confidence_level`、`coverage_notes`。如果 compiled memory 缺失、過期，或跟 tracker 衝突，系統會回到 tracker-only fallback。規則很清楚：`threads_daily_tracker.json` 永遠贏。
+### 新增 `/update`：安全檢查新版與選擇性自動更新
 
-### 新增 quick cards，避免每次載入大型知識庫
+AK體新增 `/update` 模組，可以檢查 GitHub 上的 AK-Threads-Booster 是否有新版，也可以在用戶明確同意後安裝每週自動檢查更新。
 
-新增三張低 token 判斷卡：
+更新邏輯走 `scripts/check_skill_update.py`：
 
-- `knowledge/cards/algorithm-card.md`
-- `knowledge/cards/psychology-card.md`
-- `knowledge/cards/ai-tone-card.md`
+- 只允許 clean repo 的 fast-forward 更新。
+- 如果有本地修改、未追蹤檔案、local-only commits 或衝突，會停下回報。
+- 不會自動 reset、rebase、stash 或覆蓋本地檔案。
+- 每次檢查或更新後，會主動問用戶要不要開啟每週自動檢查，但不會預設開啟。
+- 即使用戶沒有主動輸入 `/update`，在第一次 `/setup`、安裝說明或 skill 維護情境中，AK體也會主動告知這個選項並詢問是否開啟。
 
-日常 `lite` / `standard` 模式會優先讀 quick cards。只有在 red line 不確定、使用者要求 deep analysis，或真的需要深度判斷時，才讀完整的 `psychology.md`、`algorithm.md`、`ai-detection.md`。
+### 新增 Voice Fingerprint
 
-### `/analyze` 預設變成更省輸出的 brief mode
+新增 `scripts/build_voice_distillation.py`，會從 `threads_daily_tracker.json` 產生：
 
-新增 `analyze.output_mode`：`brief` 只輸出最關鍵決策層，`standard` 完整但精簡，`full` 回到完整 11-section report。預設是 `brief`，讓日常檢查貼文更快、更省，也比較適合低用量 Agent。
+- `compiled/voice_fingerprint.md`
+- `compiled/voice_fingerprint.json`
 
-### 新增 runtime 設定
+它會先算出高互動貼文、開頭 / 結尾模式、段落節奏、常用轉折詞、標點、英文混用、留言回覆語氣、候選信念句、反 voice 候選與校準錨點。這些是 runtime cache，不取代 tracker。
 
-`threads_booster_config.json` 現在支援 `runtime.depth`、`runtime.compiled_memory`、`analyze.output_mode`。預設是 `standard + prefer + brief`：省 token，但不犧牲基本判斷品質。
+`scripts/build_compiled_memory.py` 現在也會一起重建 voice fingerprint，所以更新 compiled memory 時不會漏掉 `/voice` 的新底稿。
 
-### 新增低 token / 高 token 選擇問題
+### `/voice` 新增認知層
 
-如果使用者還沒有設定偏好，Skill 會在重度讀取前先問：
+`/voice` 現在會把分析從 14 維擴成 15 維，新增：
 
-- **低 token 版**：比較快、省用量，適合日常檢查、一般選題、普通草稿；缺點是細節較少，遇到微妙風格或演算法邊界時可能要再切高 token。
-- **高 token 版**：讀更多歷史資料與完整知識庫，適合重要貼文、深度品牌聲音校準、重大策略決策；缺點是比較慢，也更耗 Agent 用量。
+- 核心信念
+- 判斷框架
+- 觀點張力
+- 信念邊界
 
-這樣用戶可以自己決定這次要省額度，還是要完整深挖。
+每個重要結論都要標注它是高互動 pattern、近期穩定 pattern、歷史 pattern，還是薄弱證據。這可以避免把很久以前的寫法硬塞進現在的 `/draft`。
 
-### `/AGENTS.md` 變輕了
+### Brand Voice 變成 `/draft` 可執行作戰包
 
-`AGENTS.md` 現在只做 routing、核心原則、低 token runtime 提醒，不再內嵌整份 `/analyze` 流程。這可以減少支援 AGENTS.md 的工具一進場就讀到重複規則。
+`brand_voice.md` 模板新增：
 
-### 新增 runtime budget eval
+- `Cognitive Core`
+- `Voice Fingerprint`
+- `Anti-Voice / Forbidden Zone`
+- `/draft Quick-Reference Pack`
+- `Calibration Pairs`
 
-`evals/rubric.md` 新增 G 組檢查，確認 low-token runtime 會先用 compiled memory、tracker 仍是 source of truth、quick cards 會先於 deep knowledge 使用、brief output 不會偷偷輸出完整長報告，也會在沒有偏好時先問低 token / 高 token 選擇。
+這些 section 讓 `/draft` 不只是模仿句型，而是先對齊用戶的立場、判斷方式、開頭/結尾習慣，以及哪些寫法一碰就不像本人。
+
+### `/draft` 讀取優先級更新
+
+`/draft` 現在會優先讀：
+
+1. Manual Refinements
+2. Cognitive Core
+3. `/draft Quick-Reference Pack`
+4. Anti-Voice / Forbidden Zone
+5. Voice Fingerprint
+
+如果舊版 `brand_voice.md` 還沒有這些 section，`/draft` 會提醒重新跑 `/voice`，而不是假裝 voice baseline 已經夠精準。
 
 ### 版本
 
-- Main `SKILL.md`：`1.1.0` → `1.2.0`
-- `setup` / `analyze` / `draft` / `review` / `refresh`：`1.1.0` → `1.2.0`
-- `topics` / `predict`：`1.0.0` → `1.1.0`
-- Eval rubric：`1.1.0` → `1.2.0`
-
-### Patch：Token 模式選擇
-
-- Main `SKILL.md`：`1.2.0` → `1.2.1`
-- `analyze` / `draft` / `review`：`1.2.0` → `1.2.1`
-- `topics` / `predict`：`1.1.0` → `1.1.1`
-- Runtime budget policy：`1.0.0` → `1.0.1`
-- Eval rubric：`1.2.0` → `1.2.1`
+- Main `SKILL.md`：`2.0.0`
+- 全部 sub-skill：`2.0.0`
+- Runtime budget policy：`2.0.0`
+- Compiled memory schema：`2.0.0`
 
 ---
 
----
+## 2026-04-26 - 新增本地視覺面板：把帳號狀態變成可以看的儀表板
 
-## 2026-04-23 — Harness 加固 Phase 2（瘦身 + 自我優化閉環）
+AK體多了一個本地視覺面板。你不需要再打開 tracker JSON、也不用翻 markdown 檔，就能在一頁看到帳號全貌、最近趨勢、最強主題、留言訊號跟 compiled memory。面板本身完全本地、零 token — 看數據不花用量，AI 動作要按下按鈕才觸發。
 
-Phase 1 把骨架變穩，這次 Phase 2 做兩件事：**把肥的 sub-skill 瘦下來**，以及**把 compound 閉環第四步變成 skill 內建的功能**，不再需要任何外部工具。
+### 為什麼會想要這個面板
 
-### 6 個 sub-skill 都瘦身到 150 行以內
+- **寫貼文前先掃一眼，比直接叫 `/analyze` 省 token**。30 秒掃完帳號狀態，再決定要不要花 token 進 AI 流程。
+- **不用切到 IDE 就能看 compiled memory**。下一步行列、帳號診斷直接呈現在畫面上。
+- **Demo 給合作對象看更直覺**。不需要解釋 tracker JSON 是什麼，直接秀畫面。
+- **非技術用戶也能用**。匯入 tracker JSON 就跑，不需要 Python，不需要懂指令列。
 
-之前 `setup`（526 行）、`analyze`（375）、`draft`（346）、`review`（327）、`refresh`（303）、`voice`（288）長到不好維護——每次要改一條規則都得在長檔案裡翻半天，也容易漏改。
+### 一頁看完整個帳號
 
-這次把每個 sub-skill 的長流程、長清單、輸出格式樣板都搬進各自的 `references/` 資料夾，SKILL.md 只留「怎麼判斷、要做哪幾步、每一步指到哪個 reference」。改完以後：
+- **帳號總覽**：貼文數、總觀看、互動率三張指標卡，每張都帶「過去 14 天 vs 再前 14 天」的趨勢晶片，紅綠箭頭一眼看出最近狀態走升還是走跌。
+- **觀看曲線 + 中位數基準線**：最近 14 天的觀看曲線會疊一條虛線基準，落在線上是「比平常好」、線下是「比平常差」，不需要心算。
+- **重點窗口**：最佳貼文、最強主題、最近一篇拉到最上面，不用往下捲。
+- **下一步行列 + 帳號訊號**：自動讀取 compiled memory，演算法 / 心理 / 反 AI 三軸診斷直接顯示。
+- **可讀檔案**：歷史貼文（按時間 / 按主題）、留言記錄全部 markdown 排版渲染，標題、清單、粗體都正確呈現，不再是 raw text。
+- **貼文檢視**：可以搜尋、按主題 / 類型 / 時間過濾，點任一篇就能看完整內文跟所有指標。
 
-- `setup` 526 → 111 行
-- `analyze` 375 → 82 行
-- `draft` 346 → 115 行
-- `review` 327 → 113 行
-- `refresh` 303 → 71 行
-- `voice` 288 → 73 行
+### 啟動方式
 
-行為沒變，能做的事一樣。只是現在每個 SKILL.md 打開來，15 秒內就能看完整個流程。
+```
+python scripts/panel_server.py --open
+```
 
-### 新增 `/optimize` sub-skill——compound 閉環第四步
+會自動找 tracker、companion 檔、compiled memory。如果資料在另一個資料夾，加 `--data-root <path>`。沒有 Python 也能直接用瀏覽器打開 `panel/index.html`，匯入 tracker JSON 即可。
 
-Phase 1 做的是 compound 閉環的「記錄」部分：`/review` 把「sub-skill 建議錯了」的事件寫進 `threads_skill_learnings.log`，累積 10 條會提醒你。但**怎麼把 log 變成真正的規則修改**，之前只給三條建議、其中有一條還要依賴外部 meta-skill。
+也可以在 Skill 裡用 `/panel` 觸發。
 
-現在有了 `/optimize`——直接內建在這個 skill 裡，不需要裝別的東西。流程：
+### 零 token 預設
 
-1. 讀 `threads_skill_learnings.log`，照 `(sub_skill, category)` 分群
-2. 每個群至少 2 條才值得動；少於 2 條會列出來但標低優先
-3. 針對每個值得動的群，起草「具體要改哪個檔案的哪一段、改成什麼、為什麼、什麼時候該把這條規則拿掉」的提案
-4. 等你回覆要應用哪幾條（`all` / 編號 / `skip`）
-5. 你同意的才照 `templates/FAILSAFE.md` 備份+寫入，被否決的寫進 `rejected-proposals.md` 以免下次又重新提案
-6. 應用成功後，在 log 裡 append 一條 `supersedes` 指向原本的 run_id——append-only，舊記錄不改
+面板本身不會發出任何 AI 請求：
 
-鐵律兩條：**沒有 `user_signal` 逐字引用，就不能提案規則改動**；**所有改動都要你明確同意，不會自動執行**。
+- 圖表、排序、過濾、搜尋都在瀏覽器本地計算。
+- **分析 / 預測 / 檢查** 三顆按鈕會把選中的貼文打包成 prompt，放在面板下方的文字框，要送出時才複製給 AI。
+- **重建 compiled memory** 在本地執行 `scripts/build_compiled_memory.py`，產生新的低 token 記憶檔，下次叫 Skill 直接用。
 
-### `/review` 的閉環提示改成單路徑
+### 介面設計
 
-以前累積 10 條時，`/review` 會給你三個選擇（自己翻 log、交給維護者、有 meta-skill 的話用它跑）。現在單路徑：「跑 `/optimize`」。少一層選擇、行動更明確。你自己想手動翻 log 當然還是可以，但預設推薦路徑只剩一條。
+- **編輯級配色**：單一 indigo 強調色 + 中性紙白底，沒有粉彩漸層或裝飾色塊。
+- **Light / Dark 自動切換**：跟著作業系統設定走，不需要手動。
+- **中英雙語**：一鍵切換，整個面板（含 i18n label）都會跟著翻譯。
+- **真 SVG 圖示**：topbar 五顆按鈕（語言、資料夾、Tracker、範例、重建）改用 inline SVG，沒有外部依賴、沒有字型 CDN。
+- **Markdown 渲染**：compiled memory 跟 companion 檔內的 H1~H4、有序/無序清單、粗體、斜體、行內程式碼、程式區塊全部正確排版。
+- **資料密度優化**：1440px 寬之下，hero → 重點窗口 → command center 變成清楚的「概覽 → 重點 → 操作」垂直節奏。
 
-### 主 SKILL.md 加了 `/optimize` 的 routing
+### 新增檔案
 
-Intent Routing 表多了一行：「Optimize the skill itself / compound pass / 優化 skill / 自我優化 / 閉環」→ `/optimize`。觸發詞大致是這些。
-
-### 新增 F4 rubric + fixture
-
-`evals/rubric.md` 多了 F4：`/optimize` 不能在沒有 `user_signal` 逐字引用的情況下寫規則。新的 fixture `optimize-requires-user-signal.md` 餵一個全是空 `user_signal` 的 log 進去，看 `/optimize` 會不會守線——應該要回報「沒什麼可做的」然後乾淨退出，不能編造 signal、不能硬改檔案。
-
-### 版本號
-
-- 主 SKILL.md：1.0.0 → 1.1.0
-- `setup` / `analyze` / `draft` / `review` / `refresh` / `voice`：1.0.0 → 1.1.0（瘦身）
-- `optimize`：新 1.0.0
-- `predict` / `topics`：維持 1.0.0（沒動）
-
-### 可能影響你使用的地方
-
-- **指令列表多一個 `/optimize`**。平時不用管，等到 `/review` 告訴你 log 滿 10 條再跑——跑了就會看到分群提案，決定要不要改。
-- **sub-skill 運作感覺沒變**，但如果你之前有改過 skill 檔案，要改的位置可能搬到 `references/` 裡了。主檔案會指過去。
-- **rubric 多了 F4**。自己跑 eval 時記得 `/optimize` 要過這條。
+- `panel/`：靜態 HTML / CSS / JS，零外部依賴。
+- `scripts/panel_server.py`：dependency-free 本地 server，可選 `--data-root` / `--open`。
+- `skills/panel/SKILL.md`：`/panel` 指令模組。
 
 ---
 
-## 2026-04-22 — Harness 加固 Phase 1（內部結構）
+## 2026-04-25 - AK體架構加固：更省 token、更穩、更會判斷下一篇
 
-這次不是功能變更，是把整個 skill 的骨架變更穩。使用上的變化很少，但之後每次改東西都會比較安全、比較容易看出有沒有壞掉。
+這次更新把 AK體從「會分析與寫文」升級成更完整的 Threads 經營判斷系統。核心改進是：日常使用更省 token，判斷更一致，下一篇內容不再從零猜，而是根據帳號狀態、演算法訊號、受眾心理與反 AI 風格一起判斷。
 
-### 加了「版本號」
+### 更省 token 的日常模式
 
-主 `SKILL.md` 和 8 個 sub-skill 的 frontmatter 現在都有 `version: "1.0.0"`。`templates/tracker-template.json` 也加了 `schema_version: 1`。以後改東西時，版本號會跟著動——讓你（和我）一眼看出眼前的 tracker / skill 是哪一版的規則。
+AK體現在會把歷史資料整理成低 token 記憶檔，日常分析不需要每次重讀完整 tracker 和大型知識庫。
 
-### 紅線規則從「兩邊各寫一份」改成「一份」
+新增與強化的低 token 檔案包括：
 
-以前 `/analyze` 和 `/draft` 各自維護一份紅線清單（R1–R12），改一邊忘了另一邊就會漂移。現在統一搬到 `knowledge/_shared/red-lines.md`，兩邊都從那裡讀。同一段話在兩個 sub-skill 判讀結果應該一致了。
+- `compiled/account_wiki.md`：帳號基本狀態與歷史摘要。
+- `compiled/account_state.md`：三軸帳號診斷。
+- `compiled/personal_signal_memory.md`：這個帳號自己的演算法、心理、反 AI 訊號記憶。
+- `compiled/next_move_queue.md`：下一篇可以考慮的方向。
+- `compiled/post_feature_index.jsonl`、`cluster_wiki.json`、`recent_window.md`：用來快速比對歷史貼文、題材重複與近期狀態。
 
-### 加了 evals 層
+使用上會更快，也比較不容易因為一次分析就消耗大量 Agent 用量。
 
-`evals/` 是新的資料夾。裡面有：
+### 新增低 token / 高 token 選擇
 
-- `rubric.md`——所有 sub-skill 該有的行為檢查清單（分 A–F 六組）
-- `fixtures/`——4 個最小測試案例（`/analyze` 不得全文改寫、`/draft` WebSearch 壞掉時要 fail closed、紅線偵測、`/review` 備份安全）
-- `README.md` 和 `runbook.md`——怎麼跑 eval
+當設定還沒固定時，Skill 會先問用戶這次要用哪種模式：
 
-用法：每次改完 sub-skill 行為規則，開新的 Claude Code session 跑一輪 rubric 對應的 fixture。不要在同一個 session 裡讓 sub-skill 自我評估——executor 和 evaluator 必須分開。
+- **低 token 版**：比較快、省用量，適合日常檢查、一般選題、普通草稿。
+- **高 token 版**：讀得更深，適合重要貼文、微妙風格判斷、演算法邊界問題，但比較慢也比較花用量。
 
-### 加了持久狀態寫入政策
+用戶可以把偏好設成固定模式，也可以之後再改。
 
-新檔案 `templates/FAILSAFE.md`。所有會改檔案的 sub-skill（`/review`、`/refresh`、`/voice`、`/setup`、`/predict`）現在都要照這份政策走：備份 → 寫 temp → atomic rename → 只留最近 5 份備份。一個檔案備份失敗就全部中止，不做部分寫入。
+### 新增三軸帳號診斷
 
-`/review` 的 Step 3.5 Backup Before Write 早就在做這件事，這次只是把政策拉出來變成所有寫入 sub-skill 的共通契約。
+AK體現在會把帳號狀態拆成三個面向：
 
-### 加了 Compound 閉環（第四步）
+- **演算法狀態**：最近觸及、留言率、分享率、題材重複、紅線風險。
+- **受眾心理狀態**：現在更需要信任、共鳴、具體經驗、可轉述觀點，還是高品質討論。
+- **反 AI 狀態**：內容是否太完整、太工整、太像整理文，缺少人的判斷、限制感與現場感。
 
-以前的流程是 `/topics`（Plan）→ `/draft`（Work）→ `/review`（Review）。第四步「Compound」——也就是「這次 skill 本身做錯了什麼」——沒地方寫。
+這些判斷都仍然以 `threads_daily_tracker.json` 為準。低 token 檔案只是整理後的快取，不會取代原始資料。
 
-現在 `/review` 多了 Step 8 Skill-Level Learning Capture。條件很嚴格：**只有你明確告訴我 sub-skill 的建議事後證實是錯的**，才會寫一條進 `threads_skill_learnings.log`。我不會自己猜。
+### 新增 Next Move Engine
 
-累積到 10 條，`/review` 會在報告末尾提醒你有一份值得回顧的 log，並提供三條自助的閉環路徑：自己翻 log 改對應的 sub-skill 規則 / 把 log 交給 skill 維護者 / 有裝 meta-skill 的話用它跑。不綁定任何外部工具——這個 skill 可以獨立運作。
+AK體不再只問「下一篇要寫什麼」，而是先判斷「下一篇最該補哪個成長瓶頸」。
 
-### 主 SKILL.md 多了三個新段落
+可能的方向包括：
 
-- **Tools Surface**——說明為什麼主檔的 `allowed-tools` 只列 `Read, Glob, Grep`（各 sub-skill 會自己擴充）
-- **Persistent-State Policy**——指向 `templates/FAILSAFE.md`
-- **Shared Knowledge**——紅線和 compound log schema 住哪裡
-- **Precedence and Conflicts**——5 層優先順序（主 SKILL → sub-skill → `_shared/` → `knowledge/` → `templates/`），衝突時上層贏
+- **補人格判斷**：資訊量夠，但人的立場、經驗、取捨不夠明顯。
+- **澄清分歧**：需要提高討論密度，但避免變成吵架或釣留言。
+- **擴散型實用觀點**：需要讓非粉也能一眼理解、收藏或轉發。
 
-### 可能影響你使用的地方
+每個方向都必須先通過 AK體內建演算法規則：避開紅線，再確認要強化哪個正向訊號，最後才用心理學與反 AI 檢查調整表達方式。
 
-- **紅線判讀一致性**：`/analyze` 說某句話踩 R1，`/draft` 也應該避開同一個 R1。如果發現兩邊不一致，那就是 bug——告訴我，我去修。
-- **備份檔變多**：你的工作資料夾裡會看到 `*.bak-20260422T143012Z` 這種檔案。每個會被寫入的檔案最多 5 份，舊的會自動清。如果誤刪重要資料，從 `.bak-*` 還原。
-- **`/review` 有機會問你一句關於「skill 本身做錯什麼」**：完全 opt-in，不想理就說「skip」。
+這不是公式庫，也不是爆文模板。它的用途是讓用戶更清楚知道：下一篇為什麼該這樣寫。
+
+### 演算法紅線更一致
+
+`/analyze` 和 `/draft` 現在共用同一份紅線規則，不再各自維護一套判斷。
+
+這代表同一段內容在分析與草稿階段，應該會得到一致的紅線判斷，例如：
+
+- 互動誘導
+- 標題黨
+- 開頭與內文不一致
+- 低原創性
+- 連續同題材
+- 低品質外部連結
+- AI 內容標示與人格感問題
+
+如果踩到明確紅線，AK體會直接提醒，因為這類問題可能影響分發。
+
+### 輸出更像顧問，不像報告機
+
+面向用戶的輸出會更精簡、更決策導向：
+
+- 日常 `/analyze` 預設用 brief mode，只輸出真正重要的風險、機會與具體修改點。
+- 不主動整篇重寫用戶已經寫好的貼文，只給「哪裡、為什麼、怎麼改」。
+- 輸出會跟隨用戶使用的語言。用戶用中文，就少用不必要的英文術語；用戶用英文，就可以正常使用英文專業術語。`S2`、`R5` 這類 AK體內部代號第一次出現時仍會解釋。
+
+### 更安全的資料更新
+
+會寫入 tracker、style guide、concept library 或設定檔的流程，現在統一走備份與安全寫入規則：
+
+- 寫入前先備份。
+- 使用暫存檔再替換，降低寫壞檔案風險。
+- 舊備份會自動控制數量。
+- compiled memory 是快取，可以重建，不會當成唯一資料來源。
+
+### 新增自我優化閉環
+
+AK體現在可以把使用過程中確認的錯誤或漏判記錄下來，再透過 `/optimize` 轉成後續規則更新。
+
+這個流程不會自動亂改。只有當用戶明確指出「這次判斷錯了」或「這裡漏掉了」，才會進入學習記錄。
+
+### 新增維護與測試基準
+
+新增 `evals/` 測試規則，讓後續維護可以檢查：
+
+- `/analyze` 不應主動整篇改寫。
+- `/draft` 不能跳過 freshness gate。
+- 紅線判斷要一致。
+- 寫入流程要有備份。
+- Next Move 不能退化成公式庫。
+- 用戶輸出要跟隨用戶語言；中文情境不堆英文術語，英文情境保留專業英文表達。
+
+### 版本
+
+- Main `SKILL.md`：`1.2.2`
+- `setup`：`1.2.1`
+- `analyze` / `draft` / `review`：`1.2.2`
+- `topics` / `predict`：`1.1.2`
+- Runtime budget policy：`1.1.0`
+- Eval rubric：`1.2.2`
 
 ---
 
-## 2026-04-22
+## 2026-04-22 - 第一版優化：寫稿前先對齊，品牌聲音不再當成死規則
 
-### `/draft` 變聰明了
+這一版的重點，是讓 AK體不要太快直接產稿，而是先跟用戶對齊角度、事實與語氣。它讓寫稿流程更像合作，不像按一下就吐出一篇。
 
-- **寫稿前會先跟你討論**。找完 research、做完 fact-check 以後，不會直接開寫，會先問你 2-4 個關鍵問題（要不要用這個角度、這個說法查不到你有沒有第一手經驗、要不要預先回應留言區會吵的反駁），等你回覆再下筆。
-- **寫完以後會再回問你 3-5 個針對這篇的改進問題**。不是「還可以嗎？」這種罐頭，是針對這篇的 hook、證據、立場強度、結尾寫法去問。
-- **主動丟你可能沒想到的角度**。research 時會挑 2-3 個你原本沒提到的切入方式給你選（反直覺、歷史對照、產業類比……），能用就用，不想用就不用。
-- **不會亂你自己說過的事**。fact-check 的時候，只要是你講過的個人事實或事件順序，以你自己的貼文為準，網路搜尋不會推翻你。查不到的個人細節會標 `[confirm with user]` 來問你，不自己猜。
+### `/draft` 寫稿前會先討論
 
-### 你可以決定 `/draft` 要不要跟你聊
+研究與查證完成後，AK體不會直接開寫，而是會先問幾個跟這篇內容有關的問題，例如：
 
-這些討論功能都是可開關的。第一次會問你要不要開，你可以回答：
+- 這個角度要不要採用？
+- 這個說法是否有你的第一手經驗？
+- 有沒有需要先避開的爭議或留言區反駁？
+- 這篇要走更保守，還是更有立場？
 
-- **只這次**——答完這次，下次再問
-- **always on**——以後都要討論
-- **always off**——以後都不討論，直接給稿
+這讓草稿比較不容易偏題，也比較不容易把用戶沒說過的事寫成確定事實。
 
-選擇會存在 `threads_booster_config.json`，隨時改。
+### 討論模式可以開關
 
-> 想要快就選 always off，想要深就選 always on。預設是每次問你一次。
+用戶可以決定 `/draft` 要不要每次都跟自己討論：
 
-### `/voice` 生成更細、也更誠實
+- **只這次**：這次討論，下次再問。
+- **always on**：以後都先討論。
+- **always off**：以後直接產稿，適合想要快一點的流程。
 
-- **現在會說清楚「這是參考初稿，不是定稿」**。LLM 從外面看你的貼文一定漏東西，你自己才最懂自己。
-- **分析維度加深**。除了原本的結構/語氣/情緒等，還會幫你抓：高頻字詞 top 15-20（含出現次數）、開場/收尾/標點習慣、中英夾雜模式、論證慣性。
-- **新增 Manual Refinements 區塊**。檔案最下面留一塊給你自己填（分析哪裡寫錯了、漏了什麼、哪些是你「絕對不會講」的話）。你填的內容優先級最高，`/draft` 寫稿會當成硬規則。
-- **重跑 `/voice` 不會蓋掉你的手動修改**。會先讀舊檔、保留你動過的地方，再跟你確認才覆蓋。
+設定會存在 `threads_booster_config.json`，之後可以再改。
 
-### `/analyze` 和 `/review` 也會主動問問題
+### 個人事實以用戶自己的內容為準
 
-和 `/draft` 一樣的邏輯：分析完/檢討完，可以選要不要補問 2-3 個針對這篇/這次表現的追問。同一個開關控制，設定方式一樣。
+如果草稿涉及用戶自己的經歷、事件順序、做過的事，AK體會以用戶自己的貼文與手動補充為準。網路搜尋不能推翻用戶自己的歷史內容。
 
-### `/review` 會回看 `/draft` 當初的決定
+查不到或不確定的個人細節，會標成 `[confirm with user]`，不會自己猜。
 
-檢討實際表現時，會拉出你當初在 `/draft` 討論階段做過的選擇（「接受了這個角度」「丟了那個說法」），對照貼文實際表現回頭看當初的判斷是不是對的。下次類似情境就知道怎麼選。
+### `/voice` 變成可修正的聲音初稿
 
-### 新檔案
+`/voice` 產出的品牌聲音不再被當成不可更動的定稿，而是「可校正的初稿」。
 
-- `threads_booster_config.json`——存你的偏好設定
-- `CHANGELOG.md`——就是你在看的這個
+新增重點：
 
----
+- 會更細地分析用詞、開頭、收尾、標點、節奏、中英夾雜與論證習慣。
+- 新增 `Manual Refinements` 區塊，讓用戶自己補「這裡不準」、「我不會這樣講」、「這句很像我」。
+- 之後重跑 `/voice` 時，會保留用戶手動修改，不會直接覆蓋。
 
-### 為什麼做這些改動
+這讓 Brand Voice 更接近用戶自己認可的聲音，而不是 AI 單方面整理出來的印象。
 
-使用者反饋兩件事：`/draft` 寫太快、太少跟人討論，有時候會把貼文角度帶偏、甚至搞錯你講過的個人細節；`/voice` 生出來的 brand voice 又粗、又會被當成定稿用。
+### `/analyze` 和 `/review` 也能追問
 
-這次的核心想法：
+分析或檢討完成後，AK體可以補問幾個針對該篇內容的問題，幫用戶決定要不要深入調整。這跟 `/draft` 使用同一組討論偏好。
 
-1. **對話不是義務，是選項**——想要就開，不想要就關
-2. **你自己的話才是最終依據**——不管是 brand voice 還是個人事實
-3. **AI 的產出是初稿，你的手動修改優先級最高**
+### `/review` 會回看當初的寫稿決策
+
+如果一篇文先經過 `/draft` 討論，後續 `/review` 可以回頭看當初採用或放棄了哪些角度，再對照實際表現。這讓每一次發文不只是單次結果，而是能累積成下次判斷的依據。
+
+### 新增檔案
+
+- `threads_booster_config.json`：保存討論模式、runtime 偏好等設定。
+- `CHANGELOG.md`：記錄 AK體的產品更新。

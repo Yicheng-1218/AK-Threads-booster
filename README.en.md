@@ -1,6 +1,6 @@
 [Chinese](README.md) | [English](README.en.md)
 
-# AK體 - Threads Algorithm Optimization Skill
+# AK體 2.0 - Threads Algorithm Content Decision Skill
 
 `AK-Threads-Booster` remains the internal package name and install id.
 
@@ -48,7 +48,7 @@ Estimate likely 24-hour performance from comparable historical posts so expectat
 Compare actual results against the prediction and write the learning back into the tracker.
 
 ### `/refresh`
-Update `threads_daily_tracker.json` through the Threads API when available, or via Chrome MCP when API access is not available.
+Update `threads_daily_tracker.json` through the Threads API when available, or through an authenticated browser automation environment when API access is not available.
 
 ---
 
@@ -77,7 +77,7 @@ The tracker is the canonical file. The rest exist to make the data easier to use
 /voice
 ```
 
-This builds the tracker first, then deepens the brand-voice layer for better drafting.
+This builds the tracker first, then deepens the brand-voice layer for better drafting. The newer `/voice` flow first builds a local voice fingerprint, then uses AI judgment for cognitive core, anti-voice boundaries, and the `/draft` quick-reference pack.
 
 `/voice` produces a **first-draft reference** `brand_voice.md`, not a verdict. An outside LLM always misses things the author knows about themselves. Expected usage:
 
@@ -85,7 +85,7 @@ This builds the tracker first, then deepens the brand-voice layer for better dra
 - Fill in the **Manual Refinements** section at the bottom with taboos, must-do rules, and "not me" phrases.
 - Re-runs of `/voice` preserve your edits and the Manual Refinements section.
 
-`/draft` treats Manual Refinements as hard constraints, ranked above other generated sections.
+`/draft` treats Manual Refinements as hard constraints, ranked above other generated sections. It then reads Cognitive Core, the Quick-Reference Pack, Anti-Voice, and Voice Fingerprint.
 
 ### Before posting
 
@@ -96,6 +96,12 @@ This builds the tracker first, then deepens the brand-voice layer for better dra
 ```
 
 Use `/topics` to find the best next angle, `/draft` to create a starting point, and `/analyze` to pressure-test the finished draft before publishing.
+
+### Skill Updates
+
+Use `/update` to check whether AK-Threads-Booster has a newer version.
+
+After a check, `/update` will proactively ask whether you want to enable weekly auto-update checks. If enabled, it only fast-forwards when the local repo is clean and safe to update. If local edits, local-only commits, or conflicts exist, it stops and reports the blocker instead of overwriting anything.
 
 ### After posting
 
@@ -115,7 +121,7 @@ Users can build the system from:
 - Threads Developer API token
 - Meta official export zip
 - existing JSON / Markdown / CSV
-- Chrome logged into Threads with Claude in Chrome MCP
+- an authenticated browser automation environment logged into Threads
 - legacy tracker migration
 
 API access is optional, but it makes refresh much easier.
@@ -136,19 +142,21 @@ That is a stronger and more honest product promise than claiming guaranteed resu
 
 ## Installation
 
-### Claude Code
+Give this GitHub repo to your agent:
 
-```bash
-claude install-plugin https://github.com/akseolabs-seo/AK-Threads-booster
+```text
+https://github.com/akseolabs-seo/AK-Threads-booster
 ```
 
-### Manual
+Agents that support repo instructions or skill directories can read `AGENTS.md` or `SKILL.md`, then route into `/setup`, `/voice`, `/topics`, `/draft`, `/analyze`, and the other modules.
+
+You can also clone it manually:
 
 ```bash
 git clone https://github.com/akseolabs-seo/AK-Threads-booster.git
 ```
 
-Place the repo in the skill or plugin directory used by the target tool.
+Place the repo in the skill or agent-instructions directory used by the target tool.
 
 ---
 
@@ -167,6 +175,8 @@ AK-Threads-booster/
 |  |- review/SKILL.md
 |  |- topics/SKILL.md
 |  |- voice/SKILL.md
+|  |- panel/SKILL.md
+|  |- update/SKILL.md
 |- knowledge/
 |  |- _shared/
 |  |- psychology.md
@@ -177,9 +187,14 @@ AK-Threads-booster/
 |- scripts/
 |  |- fetch_threads.py
 |  |- parse_export.py
+|  |- build_compiled_memory.py
+|  |- build_voice_distillation.py
+|  |- check_skill_update.py
+|  |- panel_server.py
 |  |- update_snapshots.py
 |  |- update_topic_freshness.py
 |  |- render_companions.py
+|- panel/
 |- templates/
 |- examples/
 ```

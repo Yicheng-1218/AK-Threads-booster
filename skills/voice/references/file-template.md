@@ -27,6 +27,7 @@ Never overwrite a non-empty Manual Refinements section. This rule has no excepti
 > Based on deep analysis of X posts + Y comment replies
 > Generated: YYYY-MM-DD
 > This file is produced by /voice and referenced by /draft.
+> Voice fingerprint source: compiled/voice_fingerprint.md generated from threads_daily_tracker.json.
 >
 > How to use this file:
 > 1. Read through it. Anywhere it feels wrong, edit directly — your edits win.
@@ -75,11 +76,68 @@ Never overwrite a non-empty Manual Refinements section. This rule has no excepti
 ## Argumentation Style
 [Analysis + original text evidence]
 
-## Quick Reference Summary for /draft
-[Condense the most critical style features into a quick-reference checklist for /draft to align against]
+## Cognitive Core
+[Core beliefs, judgment frames, belief tensions, and belief boundaries. Each claim should include source IDs or original-text evidence, plus engagement/recent status.]
+
+### Core Beliefs
+[3-7 beliefs. Format: belief -> source evidence -> where it applies -> where it does not apply.]
+
+### Tension Pairs
+[At least one if supported by evidence. Format: belief A vs belief B -> sources -> how to use the tension without smoothing it away.]
+
+### Judgment Frames
+[How the user tends to decide what matters.]
+
+### Belief Boundaries
+[Claims, stances, or authority positions that /draft should not assume without user confirmation.]
+
+## Voice Fingerprint
+[Deterministic voice features from compiled/voice_fingerprint.md: rhythm, opening/ending inventory, signature phrases, punctuation, code-switching, comment-reply patterns.]
+
+### Engagement-Weighted Patterns
+[Patterns that appear in high-engagement posts, with counts and source IDs.]
+
+### Recent-Stable Patterns
+[Patterns still visible in the recent third of posts.]
+
+### Historical-Only Patterns
+[Older patterns that should be context, not hard /draft rules.]
+
+## Anti-Voice / Forbidden Zone
+[Structured not-me rules. These are hard only when supported by evidence or Manual Refinements.]
+
+Use this format:
+
+```markdown
+- Never do: [specific phrasing / structure / stance]
+  Because it breaks: [which part of the user's voice]
+  Evidence: [0/N, low-frequency candidate, negative example, or Manual Refinement]
+  Hardness: hard | candidate | needs user confirmation
+```
+
+## /draft Quick-Reference Pack
+[This is the section /draft should use directly. Keep it compact and operational.]
+
+### Opening Formulas
+[Top 5 opening patterns with original examples, engagement/recent tags, and when to use each.]
+
+### Ending / CTA Patterns
+[Top ending patterns with original examples. Include "no explicit CTA" as a valid pattern if supported.]
+
+### Voice Anchors
+[3-5 high-engagement excerpts that /draft can use as texture anchors, not as copy targets.]
+
+### Write-Before Checklist
+[A short checklist /draft should scan before producing a post.]
+
+### Forbidden-Zone Checklist
+[The highest-priority Anti-Voice rules in checkbox form.]
+
+## Calibration Pairs
+[2-3 before/after examples. Use a generic bad version vs a source-backed good version, then explain the difference. The good version should be the user's original text or a very short excerpt, not a synthetic rewrite.]
 
 ## Confidence Map
-For each section above, mark: High / Medium / Low confidence — and why (data volume, consistency, or ambiguity).
+For each section above, mark: High / Medium / Low confidence — and why (data volume, consistency, engagement support, recency, or ambiguity).
 
 ## Manual Refinements (user-edited)
 > This section is for the user to fill in. The generator should leave it empty with prompts.
@@ -103,7 +161,8 @@ After analysis, report to the user in this order:
 3. **State clearly that the output is a first-draft reference, not the final Brand Voice.** Use wording like:
    > "I've generated a first draft of your Brand Voice based on what I could observe from your posts. An outside reader always misses things you know about yourself — please read it over, fix anywhere I got you wrong, and fill in the Manual Refinements section. Your edits are what make this file actually useful for /draft."
 4. Point to specific sections most likely to need the user's input (taboo phrases, "not me" examples, audience subgroups).
-5. Honestly list dimensions where data was thin and analysis is rough.
-6. Invite one round of back-and-forth: "Tell me anything that feels off and I will revise the file directly."
+5. Name whether `compiled/voice_fingerprint.md` was used, rebuilt, stale, or unavailable.
+6. Honestly list dimensions where data was thin and analysis is rough.
+7. Invite one round of back-and-forth: "Tell me anything that feels off and I will revise the file directly."
 
 Do not describe the file as finished. Do not say "your Brand Voice is ready" without the reference-draft caveat.

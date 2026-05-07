@@ -2,6 +2,15 @@
 
 Analyze the user's writing style across every dimension below. Each dimension must include specific original post excerpts as evidence. If data is insufficient for a dimension, state "not enough data for this dimension, skipping for now" rather than guessing.
 
+Start from `compiled/voice_fingerprint.md` / `.json` when available. For each important claim, add an evidence tag:
+
+- **High-engagement pattern** — appears in the engagement-weighted corpus.
+- **Recent-stable pattern** — still appears in the recent third of posts.
+- **Historical-only pattern** — appears mostly in older posts; keep as context, not a hard `/draft` rule.
+- **Thin evidence** — fewer than 3 examples or no engagement support.
+
+Use deterministic counts from the fingerprint for mechanical features. Use model judgment for interpretation, meaning, and `/draft` implications.
+
 ---
 
 ## 2.1 Sentence Structure Preferences
@@ -123,3 +132,30 @@ Build a concrete, countable inventory — this is what makes `/draft` output rec
 - Whether claims are hedged or unhedged
 - Use of concessions ("I'll grant that…") vs flat opposition
 - Whether the user argues through stories or through points
+
+## 2.15 Cognitive Layer: Core Beliefs, Judgment Frames, and Tensions
+
+This is the main bridge from "style profile" to "personal creation genome." It should answer how the user thinks before it answers how the user phrases things.
+
+Use `compiled/voice_fingerprint.md` sections:
+
+- `Cognitive Layer Seed`
+- `Engagement-Weighted Corpus`
+- `Temporal Shift`
+- `source_excerpt_index` from `.json` when exact source IDs are needed
+
+Extract:
+
+- 3-7 core beliefs or repeated stances, ideally each supported by 2+ source posts.
+- For every belief, mark whether it appears in high-engagement posts, recent posts, or only historical posts.
+- 1+ tension pair when evidence exists. A tension pair is a real-seeming contrast inside the user's own thinking, not a bug to smooth away.
+- Judgment frames: how the user usually decides what matters (for example: cost/benefit, personal experience first, anti-template, practical leverage, audience trust).
+- Belief boundaries: claims the user has not earned, would not naturally say, or would need `[confirm with user]`.
+- Application notes for `/draft`: when a belief should guide topic selection, hook choice, argument structure, or ending.
+
+Do not:
+
+- Turn generic advice into a "core belief."
+- Treat one viral post as a stable worldview.
+- Invent a tension pair just because it sounds sophisticated.
+- Use a belief in `/draft` when the topic is outside the sampled evidence; mark it as out of coverage instead.

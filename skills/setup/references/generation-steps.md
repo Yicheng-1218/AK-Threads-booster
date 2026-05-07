@@ -76,7 +76,7 @@ All three carry a header notice that they are auto-generated and will be overwri
 
 If `render_companions.py` cannot be located or Python is unavailable, produce the same three files inline by reading the tracker and rendering them yourself. This is slower and costs tokens — only fall back when the script is genuinely missing, not as a preference.
 
-These files double as the migration source in Path E for users running the legacy manual-download + Claude-Code-reformat workflow. Producing them by default makes future migrations trivial.
+These files double as the migration source in Path E for users running a legacy manual-download + agent-reformat workflow. Producing them by default makes future migrations trivial.
 
 ---
 
@@ -91,11 +91,30 @@ python scripts/build_compiled_memory.py --tracker "<user-working-dir>/threads_da
 This creates:
 
 1. `compiled/account_wiki.md`
-2. `compiled/post_feature_index.jsonl`
-3. `compiled/cluster_wiki.json`
-4. `compiled/exemplar_bank.md`
-5. `compiled/recent_window.md`
+2. `compiled/account_state.md`
+3. `compiled/personal_signal_memory.md`
+4. `compiled/next_move_queue.md`
+5. `compiled/post_feature_index.jsonl`
+6. `compiled/cluster_wiki.json`
+7. `compiled/exemplar_bank.md`
+8. `compiled/recent_window.md`
+9. `compiled/voice_fingerprint.md`
+10. `compiled/voice_fingerprint.json`
 
 These files are derived runtime caches. They are not sources of truth and should not be hand-edited. Every generated file must include provenance metadata: `generated_at`, `source_tracker_hash`, `posts_count`, `confidence_level`, and `coverage_notes`.
 
 If `build_compiled_memory.py` cannot be located or Python is unavailable, do not fail setup. Report that downstream skills will run in tracker-only fallback and recommend rebuilding compiled memory later.
+
+---
+
+## Step 5 Addendum: Proactive Update Offer
+
+At the end of `/setup`, tell the user:
+
+```text
+另外，AK體可以開啟每週自動檢查 GitHub 更新。要不要幫你開？
+
+它只會在本地 repo 乾淨、可以 fast-forward 時更新；如果你有本地修改或衝突，會停下回報，不會覆蓋你的東西。
+```
+
+If the user accepts, route to `skills/update/SKILL.md` and install the weekly automation there. Do not install it silently.

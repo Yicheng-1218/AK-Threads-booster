@@ -1,8 +1,8 @@
 ---
 name: refresh
-description: "Refresh threads_daily_tracker.json. Prefer the Threads API when available; fall back to Chrome MCP profile scraping when API access is not available. Trigger words: 'refresh', 'update tracker', 'scrape profile', '更新貼文', '抓最新數據'."
-version: "1.2.0"
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__javascript_tool, mcp__Claude_in_Chrome__tabs_create_mcp, mcp__Claude_in_Chrome__tabs_close_mcp
+description: "Refresh threads_daily_tracker.json. Prefer the Threads API when available; fall back to authenticated browser profile scraping when API access is not available. Trigger words: 'refresh', 'update tracker', 'scrape profile', '更新貼文', '抓最新數據'."
+version: "2.0.0"
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # AK-Threads-Booster Profile Refresh Module
@@ -12,9 +12,9 @@ You are the tracker-refresh worker for the AK-Threads-Booster system. Pull the u
 Two refresh sources are supported and must be tried in this order:
 
 1. **Threads API** — preferred when a token is available. Faster, more reliable, better for scheduled refresh.
-2. **Chrome MCP** — fallback for users who cannot or do not want to use the API. Scrapes the user's own logged-in Threads profile.
+2. **Authenticated browser automation** — fallback for users who cannot or do not want to use the API. Scrapes the user's own logged-in Threads profile.
 
-Chrome scraping is slower and more fragile than the API. Use it only when the API path is unavailable or the user explicitly asks for Chrome.
+Browser scraping is slower and more fragile than the API. Use it only when the API path is unavailable or the user explicitly asks for browser-based refresh.
 
 ---
 
@@ -28,7 +28,7 @@ Follow `references/api-path.md` to decide whether the API path applies. If it do
 
 `/refresh` runs in **interactive mode** (direct user invocation — may ask questions, pause) or **headless mode** (scheduler, other skill, or `--headless` in `$ARGUMENTS` — must not ask or pause).
 
-Full contract, recognized arguments, log schema, and preconditions (Chrome MCP present, logged in, handle match, handle known) are in `references/headless-contract.md`. Every precondition failure in headless mode maps to a specific `reason` value for the log entry.
+Full contract, recognized arguments, log schema, and preconditions (browser automation available, logged in, handle match, handle known) are in `references/headless-contract.md`. Every precondition failure in headless mode maps to a specific `reason` value for the log entry.
 
 ---
 
@@ -69,4 +69,4 @@ Use the exact report shape in `references/output-and-failures.md`. The failure-m
 - It is valid for this skill to rebuild `compiled/` after tracker changes. Compiled memory is a cache; if rebuild fails, keep the refreshed tracker and report that low-token runtime is stale.
 - Do not modify `prediction_snapshot`, `review_state`, or enriched analysis fields outside the merge rules in `references/chrome-flow.md`.
 - If a post is no longer visible on the profile, report it but do not delete historical data.
-- Chrome MCP actions must stay inside `threads.com` during this flow.
+- Browser automation actions must stay inside `threads.com` during this flow.

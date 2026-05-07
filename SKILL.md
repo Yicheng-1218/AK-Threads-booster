@@ -1,7 +1,7 @@
 ---
 name: ak-threads-booster
 description: "Threads growth operating system for topic selection, drafting, analysis, prediction, review, and tracker refresh based on the user's own post history."
-version: "1.2.1"
+version: "2.0.0"
 allowed-tools: Read, Glob, Grep
 ---
 
@@ -34,6 +34,8 @@ Each sub-skill is located via `Glob **/skills/<name>/SKILL.md` so resolution wor
 - Review actual post performance / compare against prediction -> Glob `**/skills/review/SKILL.md`
 - Mine next topics / topic suggestions / 選題 -> Glob `**/skills/topics/SKILL.md`
 - Build brand voice / voice analysis -> Glob `**/skills/voice/SKILL.md`
+- Local visual panel / dashboard / data cockpit / open panel -> Glob `**/skills/panel/SKILL.md`
+- Check skill updates / update AK-Threads-Booster / install weekly auto-update / 更新 skill / 自動更新 -> Glob `**/skills/update/SKILL.md`
 - Optimize the skill itself / compound pass / 優化skill / 自我優化 / 閉環 (turn `threads_skill_learnings.log` misses into rule edits) -> Glob `**/skills/optimize/SKILL.md`
 
 ## Routing Rules
@@ -49,6 +51,7 @@ Each sub-skill is located via `Glob **/skills/<name>/SKILL.md` so resolution wor
 5. If `threads_daily_tracker.json` is missing, do not pretend the work is data-backed. Ask for fallback history or use the setup path.
 6. **Analyze vs Draft routing discipline.** If the user pastes their own text — no matter whether they say "analyze", "check", "optimize", "improve", "幫我看一下", "幫我優化" — route to `/analyze`. `/analyze` gives pointed diagnosis and preserves the user's format; it does **not** rewrite the post. Route to `/draft` only when the user has no existing text and wants something generated from a topic.
 7. **Brand voice scope.** `brand_voice.md` is a composition driver **only** in `/draft`. Every other module treats it as observation-only — for flagging drift, never for rewriting the user's submission toward a voice template.
+8. **Proactive update offer.** On first setup, installation help, or any repo/skill maintenance conversation, proactively tell the user AK體 can install an opt-in weekly GitHub update checker. Ask whether they want to enable it. Do not install it by default, and do not interrupt normal content tasks like `/draft` or `/analyze` with this offer unless the user asks about maintenance.
 
 ## Working Data
 
@@ -67,10 +70,15 @@ Look in the working directory for:
 Low-token runtime also looks for derived compiled memory in `compiled/`:
 
 - `compiled/account_wiki.md`
+- `compiled/account_state.md`
+- `compiled/personal_signal_memory.md`
+- `compiled/next_move_queue.md`
 - `compiled/post_feature_index.jsonl`
 - `compiled/cluster_wiki.json`
 - `compiled/exemplar_bank.md`
 - `compiled/recent_window.md`
+- `compiled/voice_fingerprint.md`
+- `compiled/voice_fingerprint.json`
 
 These files are runtime caches only. `threads_daily_tracker.json` remains the source of truth. If compiled memory is missing, stale, or contradicts the tracker, fall back to the tracker and recommend rebuilding compiled memory.
 
@@ -85,6 +93,7 @@ This main `SKILL.md` declares only the read-only tools it actually uses (`Read, 
 - `/draft` adds `Write, WebSearch, WebFetch`
 - `/review` adds `Write, Edit`
 - `/voice`, `/setup`, `/refresh` each extend the surface as needed
+- `/update` uses git through shell commands and may create an opt-in Codex automation when the user explicitly accepts weekly auto-update
 
 When auditing permissions, inspect the union of all sub-skill frontmatters, not just this file.
 
@@ -97,6 +106,8 @@ Compiled memory files under `compiled/` are rebuilt views, not hand-edited state
 ## Shared Knowledge
 
 Red-line (R) and signal (S) definitions live in `knowledge/_shared/red-lines.md` — the single source of truth for both `/analyze` and `/draft`. Do not inline R-lists in sub-skill SKILL.md files.
+
+Next-post direction lives in `knowledge/_shared/next-move-engine.md`. Any "next move" recommendation must pass red-line filtering first, name the S signal it is trying to strengthen, and avoid becoming a formula bank or case-study imitation.
 
 Runtime depth, compiled-memory behavior, and output-mode defaults live in `knowledge/_shared/runtime-budget.md`. In `lite` and `standard`, use `knowledge/cards/*` before full `knowledge/*.md` files.
 

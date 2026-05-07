@@ -2,7 +2,7 @@
 
 > Shared policy for keeping AK-Threads-Booster usable on low-allowance agents.
 
-Version: 1.0.1
+Version: 2.0.0
 
 ---
 
@@ -85,10 +85,14 @@ If the run is headless or cannot ask, default to low token mapping. This protect
 Expected location: `compiled/` in the working directory.
 
 - `account_wiki.md` - compact account baseline and source-linked conclusions.
+- `account_state.md` - three-axis diagnosis: algorithm state, audience psychology state, and anti-AI state.
+- `personal_signal_memory.md` - personal account signals grouped by algorithm, psychology, and anti-AI texture.
+- `next_move_queue.md` - algorithm-gated next moves, each tied to S targets and R risks.
 - `post_feature_index.jsonl` - one feature/metrics row per post.
 - `cluster_wiki.json` - semantic clusters, freshness, representative posts.
 - `exemplar_bank.md` - a capped set of representative posts.
 - `recent_window.md` - recent posts and repetition risk.
+- `voice_fingerprint.md` / `voice_fingerprint.json` - deterministic voice-pattern cache for `/voice` and `/draft`, including engagement weighting, temporal shifts, cognitive-layer seeds, anti-voice candidates, and calibration anchors.
 
 These files are derived views. They are never the source of truth.
 

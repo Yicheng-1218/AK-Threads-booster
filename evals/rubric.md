@@ -1,7 +1,7 @@
 # AK-Threads-Booster Eval Rubric
 
-Version: 1.2.1
-Last updated: 2026-04-24
+Version: 2.0.0
+Last updated: 2026-05-07
 
 Scoring: each item is Pass / Fail / N/A. A sub-skill passes the rubric only if every applicable item is Pass. Failures are logged by category so COMPOUND can spot recurring gaps.
 
@@ -55,7 +55,7 @@ Scoring: each item is Pass / Fail / N/A. A sub-skill passes the rubric only if e
 | ID | Behavior | Pass if |
 |----|----------|---------|
 | E1 | Tracker has `schema_version` | Any tracker produced or updated by the skill has a numeric top-level `schema_version` field |
-| E2 | Every sub-skill SKILL.md has a `version` | Frontmatter `version: "X.Y.Z"` present on all 8 sub-skills |
+| E2 | Every sub-skill SKILL.md has a `version` | Frontmatter `version: "X.Y.Z"` present on every sub-skill |
 | E3 | Main SKILL.md has a `version` | Frontmatter `version: "X.Y.Z"` present |
 | E4 | Breaking schema changes bump the schema_version | Any new required field, renamed field, or changed field type increments `schema_version`. Additive optional fields do not |
 | E5 | CHANGELOG.md reflects every behavior change | A changelog entry exists for the version that introduced the behavior being evaluated |
@@ -79,6 +79,20 @@ Scoring: each item is Pass / Fail / N/A. A sub-skill passes the rubric only if e
 | G4 | Brief analyze mode saves output tokens | With `analyze.output_mode = brief`, `/analyze` omits nonessential long sections and still includes red lines, decision summary, pointed changes, comparisons, AI-tone density, and reference strength |
 | G5 | Tracker-changing skills rebuild compiled memory | `/setup`, `/refresh`, `/review`, and `/predict` rebuild `compiled/` after successful tracker writes, or report that the runtime cache is stale if rebuild fails |
 | G6 | User sees low-token vs high-token tradeoff | When `runtime.token_mode` is absent or `ask`, interactive runs ask the user to choose low-token or high-token mode and clearly state speed/cost/depth tradeoffs before heavy reading |
+| G7 | Next Move Engine stays algorithm-based | `/topics`, `/draft`, `/analyze`, and `/review` only recommend a next move when it names the S signal it strengthens and the R risks it avoids; output does not call moves formulas or promise virality |
+| G8 | User-facing language mirrors the user | Output follows the user's language. Chinese runs avoid unnecessary English jargon and explain internal IDs in Chinese; English runs may use normal professional English terms but still explain AK-specific IDs the first time |
+
+## H. `/voice` — creation genome distillation
+
+| ID | Behavior | Pass if |
+|----|----------|---------|
+| H1 | Voice fingerprint is used before heavy interpretation | `/voice` loads or rebuilds `compiled/voice_fingerprint.md` before doing full tracker analysis, or explicitly reports tracker-only fallback when the fingerprint cannot be used |
+| H2 | Engagement weighting informs evidence | Major voice claims identify whether evidence is high-engagement, recent-stable, historical-only, or thin; low-performing posts are not treated as equal-strength proof unless the output explains why |
+| H3 | Cognitive Layer is present | Output includes core beliefs, judgment frames, at least one tension pair when supported, and belief boundaries; it does not reduce Brand Voice to sentence style only |
+| H4 | Temporal shift prevents stale rules | Older patterns that disappear in recent posts are marked historical-only and are not placed in `/draft` hard rules |
+| H5 | Anti-Voice separates hard rules from candidates | Forbidden-zone items distinguish `hard`, `candidate`, and `needs user confirmation`; absence-based signals are not treated as confirmed taboos |
+| H6 | `/draft` pack is operational | `brand_voice.md` includes a compact `/draft Quick-Reference Pack` with opening patterns, ending/CTA patterns, voice anchors, and a write-before checklist |
+| H7 | Manual Refinements still win | Existing Manual Refinements are preserved verbatim and outrank generated Cognitive Core, Voice Fingerprint, and compiled signals |
 
 ---
 

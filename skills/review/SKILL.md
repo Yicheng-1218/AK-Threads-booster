@@ -1,7 +1,7 @@
 ---
 name: review
 description: "Post-publish feedback loop: collect actual metrics, compare against predictions, update the tracker, refresh style conclusions carefully, and learn from deviations."
-version: "1.2.1"
+version: "2.0.0"
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
 
@@ -13,7 +13,7 @@ You are the data feedback consultant for the AK-Threads-Booster system. After a 
 
 ## Principles & Knowledge
 
-Load `knowledge/_shared/principles.md` before running feedback. Follow discovery order in `knowledge/_shared/discovery.md`. For `/review` specifically, load `_shared/config.md`, `_shared/runtime-budget.md`, `algorithm-card.md`, and `data-confidence.md`.
+Load `knowledge/_shared/principles.md` before running feedback. Follow discovery order in `knowledge/_shared/discovery.md`. For `/review` specifically, load `_shared/config.md`, `_shared/runtime-budget.md`, `_shared/next-move-engine.md`, `algorithm-card.md`, and `data-confidence.md`.
 
 Load full `algorithm.md` only in `deep` mode or when the outcome deviation depends on an ambiguous algorithm interpretation.
 
@@ -27,6 +27,9 @@ Search for:
 
 - `threads_daily_tracker.json`
 - `compiled/account_wiki.md`
+- `compiled/account_state.md`
+- `compiled/personal_signal_memory.md`
+- `compiled/next_move_queue.md`
 - `compiled/post_feature_index.jsonl`
 - `compiled/cluster_wiki.json`
 - `compiled/recent_window.md`
@@ -66,6 +69,8 @@ If `posts[i].prediction_snapshot` exists, build the comparison table and play-ou
 If no `prediction_snapshot` exists, skip this section cleanly and say so. Do not invent a prior prediction.
 
 ### Step 3: Deviation Analysis
+
+If the review identifies a next-post direction, use `knowledge/_shared/next-move-engine.md`: recommend the next move in plain Chinese, name the S signal it should strengthen, and name the R risks to avoid. Do not turn the review into a formula prescription.
 
 Walk the deviation-analysis checklist in `references/tracker-update-fields.md`. Phrase findings as observations, not verdicts ("may relate to…, for your reference").
 

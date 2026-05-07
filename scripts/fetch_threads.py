@@ -473,7 +473,7 @@ def main():
         json.dump(tracker, f, ensure_ascii=False, indent=2)
 
     print(f"\nDone! Saved {len(tracker['posts'])} posts to {args.output}")
-    print(f"Next step: Run /setup in Claude Code to generate your style guide and concept library.")
+    print("Next step: Run /setup with your agent to generate your style guide and concept library.")
 
 
 if __name__ == "__main__":

@@ -1,14 +1,19 @@
 {
   "_meta": {
-    "schema_version": "1.0.0",
+    "schema_version": "2.0.0",
     "purpose": "Schema notes for compiled memory files generated from threads_daily_tracker.json.",
     "source_of_truth": "threads_daily_tracker.json",
     "generated_files": [
       "compiled/account_wiki.md",
+      "compiled/account_state.md",
+      "compiled/personal_signal_memory.md",
+      "compiled/next_move_queue.md",
       "compiled/post_feature_index.jsonl",
       "compiled/cluster_wiki.json",
       "compiled/exemplar_bank.md",
-      "compiled/recent_window.md"
+      "compiled/recent_window.md",
+      "compiled/voice_fingerprint.md",
+      "compiled/voice_fingerprint.json"
     ]
   },
   "shared_metadata": {
@@ -61,6 +66,54 @@
         "fatigue_risk": "low | medium | high | unknown",
         "notes": "short text"
       }
+    ]
+  },
+  "account_state_md": {
+    "purpose": "Three-axis diagnosis for low-token runtime: algorithm state, audience psychology state, and anti-AI state.",
+    "rules": [
+      "Derived from tracker metrics, topic freshness, originality-risk fields, and lightweight AI-tone pattern checks.",
+      "Must not override knowledge/_shared/red-lines.md.",
+      "User-facing output should mirror the user's language; explain AK-specific IDs such as S2 or R5 the first time they appear."
+    ]
+  },
+  "personal_signal_memory_md": {
+    "purpose": "Compact personal signals grouped by algorithm, audience psychology, and anti-AI texture.",
+    "rules": [
+      "Not a case-study library.",
+      "Not a formula bank.",
+      "Use post IDs as provenance anchors and downgrade confidence when evidence is thin."
+    ]
+  },
+  "voice_fingerprint": {
+    "purpose": "Deterministic voice-pattern cache for /voice and /draft. It moves mechanical counts out of the model context and provides engagement-weighted evidence anchors.",
+    "files": {
+      "voice_fingerprint_md": "Human-readable runtime summary for /voice and /draft.",
+      "voice_fingerprint_json": "Structured counts, source IDs, temporal phases, cognitive-layer candidate sentences, anti-voice candidates, and calibration anchors."
+    },
+    "rules": [
+      "Tracker remains the source of truth.",
+      "Engagement weighting is an evidence priority signal, not a verdict on authenticity.",
+      "Temporal-shift signals should prevent old patterns from becoming hard /draft rules.",
+      "Anti-voice candidates are not hard taboos until supported by evidence or Manual Refinements.",
+      "Manual Refinements in brand_voice.md outrank every compiled signal."
+    ],
+    "top_level_keys": [
+      "_meta",
+      "engagement_model",
+      "voice_fingerprint",
+      "temporal_shift",
+      "cognitive_layer_seed",
+      "anti_voice_seed",
+      "draft_quick_reference_seed",
+      "source_excerpt_index"
+    ]
+  },
+  "next_move_queue_md": {
+    "purpose": "Algorithm-gated next moves derived from account state.",
+    "rules": [
+      "Every move must name S targets and R risks.",
+      "Do not call moves formulas.",
+      "Do not promise virality."
     ]
   },
   "reason_strip_when": {

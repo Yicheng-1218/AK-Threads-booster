@@ -1,7 +1,7 @@
 ---
 name: analyze
 description: "Decision-first analysis for a finished Threads post: style matching, psychology analysis, algorithm alignment, upside drivers, suppression risks, and AI-tone detection. Use after the user writes a post, or when they ask to analyze, check, inspect, or AK-review a draft."
-version: "1.2.1"
+version: "2.0.0"
 allowed-tools: Read, Grep, Glob
 ---
 
@@ -40,6 +40,7 @@ Load `knowledge/_shared/principles.md` (Glob `**/knowledge/_shared/principles.md
 Follow the discovery order in `knowledge/_shared/discovery.md` (Glob `**/knowledge/_shared/discovery.md`). For `/analyze` specifically, load:
 
 - `_shared/config.md` and `_shared/runtime-budget.md`
+- `_shared/next-move-engine.md` when giving a next-post direction after analysis
 - `data-confidence.md`
 - `knowledge/cards/psychology-card.md`, `knowledge/cards/algorithm-card.md`, and `knowledge/cards/ai-tone-card.md` for `lite` / `standard`
 - full `psychology.md`, `algorithm.md`, and `ai-detection.md` only for `deep`, ambiguity, red-line uncertainty, or an explicit deep-analysis request
@@ -54,7 +55,7 @@ Before loading history or knowledge, resolve `runtime.token_mode` per `knowledge
 
 Default low-token path:
 
-1. Try compiled memory first (`compiled/account_wiki.md`, `post_feature_index.jsonl`, `cluster_wiki.json`, `exemplar_bank.md`, `recent_window.md`) when `runtime.compiled_memory` is `prefer` or `require_fresh`.
+1. Try compiled memory first (`compiled/account_wiki.md`, `account_state.md`, `personal_signal_memory.md`, `next_move_queue.md`, `post_feature_index.jsonl`, `cluster_wiki.json`, `exemplar_bank.md`, `recent_window.md`) when `runtime.compiled_memory` is `prefer` or `require_fresh`.
 2. Validate freshness metadata per `knowledge/_shared/runtime-budget.md`.
 3. Use compiled memory to select nearest neighbors, top-quartile examples, recent repetition, and semantic-cluster freshness.
 4. Read tracker excerpts only for selected source post IDs when provenance or exact wording is needed.

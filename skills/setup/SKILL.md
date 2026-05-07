@@ -1,7 +1,7 @@
 ---
 name: setup
 description: "Initialize AK-Threads-Booster: import historical posts, normalize them into the tracker schema, auto-generate a personalized style guide, and build a concept library. Run on first use or whenever the user wants to backfill account history."
-version: "1.2.0"
+version: "2.0.0"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, WebFetch
 ---
 
@@ -44,7 +44,7 @@ Python 3.9+ and the `requests` package are required for the API path.
 
 Paths:
 
-- **Paths A–D** — full flow in `references/import-paths.md`: A Meta Threads API (recommended), B Meta account data export, C existing data provided directly, D Chrome-driven profile scrape via `/refresh`.
+- **Paths A-D** — full flow in `references/import-paths.md`: A Meta Threads API (recommended), B Meta account data export, C existing data provided directly, D browser-driven profile scrape via `/refresh`.
 - **Path E** — legacy tracker migration. Full detection heuristics and E.1–E.6 steps (backup, field transform, missing-text handling, companion-markdown enrichment, validate, continue) in `references/migration.md`.
 
 After migration, continue to Step 3 + Step 4 using the migrated tracker.
@@ -75,7 +75,7 @@ Follow `references/generation-steps.md` Step 4.5. Default: shell out to `scripts
 
 ### Step 4.6: Generate Low-Token Compiled Memory
 
-Run `scripts/build_compiled_memory.py --tracker ./threads_daily_tracker.json` after the tracker and companion files exist. This produces `compiled/account_wiki.md`, `compiled/post_feature_index.jsonl`, `compiled/cluster_wiki.json`, `compiled/exemplar_bank.md`, and `compiled/recent_window.md`.
+Run `scripts/build_compiled_memory.py --tracker ./threads_daily_tracker.json` after the tracker and companion files exist. This produces `compiled/account_wiki.md`, `compiled/account_state.md`, `compiled/personal_signal_memory.md`, `compiled/next_move_queue.md`, `compiled/post_feature_index.jsonl`, `compiled/cluster_wiki.json`, `compiled/exemplar_bank.md`, and `compiled/recent_window.md`.
 
 Compiled memory is a derived runtime cache, not a new source of truth. If the script is missing or fails, setup still succeeds; report that downstream skills will use tracker-only fallback until compiled memory is built.
 
@@ -90,6 +90,7 @@ Report:
 5. Whether the tracker is full-data or partial-data.
 6. That `/analyze`, `/predict`, and `/review` can already run, even if some enriched fields are still null.
 7. Whether compiled memory was built successfully or tracker-only fallback is active.
+8. Proactively ask whether the user wants to enable weekly GitHub update checks for AK-Threads-Booster. Explain that it is opt-in, fast-forward only, and stops instead of overwriting local changes. If the user says yes, route to `skills/update/SKILL.md` to install the automation.
 
 If post count is below 20, say the historical base is still limited.
 

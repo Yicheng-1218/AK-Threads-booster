@@ -1,7 +1,7 @@
 ---
 name: optimize
 description: "Self-contained compound loop: read threads_skill_learnings.log, cluster the misses, propose concrete sub-skill rule edits, and apply them with the user's approval. The fourth step after Plan / Work / Review. Trigger words: 'optimize', 'compound', '優化skill', '自我優化', '閉環'."
-version: "1.0.0"
+version: "2.0.0"
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
 
