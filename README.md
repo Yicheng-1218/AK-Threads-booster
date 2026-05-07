@@ -24,6 +24,19 @@ AK-Threads-Booster 是一套給 Threads 創作者用的 AI skill 系統。
 
 ---
 
+## 2.0 新增什麼
+
+2.0 的重點是把 AK體從單次發文輔助，升級成更完整的 Threads content operating system。
+
+- **低 token compiled memory**：把 tracker 編譯成帳號 wiki、貼文特徵索引、主題 cluster、下一步行列和 voice fingerprint，日常分析先讀快取，省 token、速度更快。
+- **Next Move Engine**：不只推薦題目，而是先判斷帳號下一篇應該補哪個成長瓶頸，例如人格判斷、討論密度、收藏價值、題材新鮮度或反 AI 感。
+- **Voice + Cognitive + Draft Operating Pack**：新版 `/voice` 先用本地腳本建立聲音指紋，再蒸餾核心信念、判斷張力、反 voice 禁區和 `/draft` 可直接使用的作戰包。
+- **本地 visual panel**：用零 token 查看帳號狀態、最近趨勢、最強貼文、主題分布、compiled memory 和下一步建議。
+- **安全 `/update`**：可以檢查新版，也可以在用戶同意後開啟每週自動檢查；只做 clean repo fast-forward，不覆蓋本地修改。
+- **全 agent 通用包裝**：移除特定 agent 平台專屬安裝入口，改用 `AGENTS.md` / `SKILL.md` / `agents/openai.yaml`。
+
+---
+
 ## 這套 skill 會幫你做什麼
 
 ### 1. 幫你選出更值得發的題
@@ -93,6 +106,34 @@ AK-Threads-Booster 是一套給 Threads 創作者用的 AI skill 系統。
 
 你不用每次都自己慢慢補資料。
 
+### 7. 幫你蒸餾更像本人的 Brand Voice
+
+`/voice` 會把歷史貼文變成更可執行的 Brand Voice：
+
+- 先算高互動貼文、開頭/結尾模式、段落節奏、常用轉折、標點和中英混用
+- 再提取你的核心信念、判斷框架和觀點張力
+- 標出哪些寫法是穩定聲音、哪些只是舊風格或薄弱證據
+- 產出 `/draft` 可以直接用的 Quick-Reference Pack 和 Forbidden Zone
+
+這讓 `/draft` 不只模仿句型，而是更接近你的內容基因。
+
+### 8. 幫你用零 token 看帳號狀態
+
+`/panel` 會開啟本地 visual panel，讓你不用翻 JSON 也能看：
+
+- 帳號總覽和最近趨勢
+- 最強貼文和主題分布
+- 貼文搜尋與篩選
+- compiled memory 和 next move queue
+
+面板本身不會呼叫 AI。你可以先看資料，再決定要不要把某篇交給 agent 分析。
+
+### 9. 幫你安全更新 skill
+
+`/update` 可以檢查 GitHub 上是否有新版。
+
+它只會在本地 repo 乾淨、可以 fast-forward 時更新；如果你有本地修改、local-only commits 或衝突，它會停下回報，不會自動覆蓋。
+
 ---
 
 ## 最適合誰
@@ -117,6 +158,10 @@ AK-Threads-Booster 是一套給 Threads 創作者用的 AI skill 系統。
 - `style_guide.md`
 - `concept_library.md`
 - `brand_voice.md`（如果有跑 `/voice`）
+- `compiled/account_wiki.md`
+- `compiled/account_state.md`
+- `compiled/next_move_queue.md`
+- `compiled/post_feature_index.jsonl`
 - `compiled/voice_fingerprint.md` / `.json`（如果有重建 compiled memory 或跑新版 `/voice`）
 - `posts_by_date.md`
 - `posts_by_topic.md`
@@ -124,7 +169,7 @@ AK-Threads-Booster 是一套給 Threads 創作者用的 AI skill 系統。
 
 其中最重要的是 `threads_daily_tracker.json`。
 
-其他 skill 幾乎都是圍繞這份 tracker 在做判斷。
+其他檔案都是圍繞這份 tracker 產生的 companion 或 runtime cache。tracker 永遠是 source of truth，compiled memory 可以重建，不需要手動改。
 
 ---
 
@@ -173,6 +218,20 @@ AK-Threads-Booster 是一套給 Threads 創作者用的 AI skill 系統。
 - 你估得準不準
 - 哪些題真的會跑
 - 哪些風格只是你以為有效
+
+### 想先看帳號狀態
+
+```text
+/panel
+```
+
+或在本機執行：
+
+```bash
+python scripts/panel_server.py --open
+```
+
+面板適合在寫文前先掃 30 秒，決定這次要不要進入 `/topics` 或 `/analyze`。
 
 ---
 

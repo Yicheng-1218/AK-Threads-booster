@@ -19,6 +19,19 @@ It turns topic selection, drafting, analysis, prediction, and review into a repe
 
 ---
 
+## What Is New In 2.0
+
+Version 2.0 turns AK-Threads-Booster from a single-post assistant into a fuller Threads content operating system.
+
+- **Low-token compiled memory**: converts the tracker into an account wiki, post feature index, topic clusters, next-move queue, exemplar bank, and voice fingerprint so daily runs can start from compact runtime memory.
+- **Next Move Engine**: recommends not just topics, but the account bottleneck the next post should address, such as stronger judgment, better discussion density, more saveable value, freshness recovery, or lower AI-tone risk.
+- **Voice + Cognitive + Draft Operating Pack**: `/voice` now builds a deterministic voice fingerprint first, then distills beliefs, tensions, anti-voice boundaries, and a `/draft` quick-reference pack.
+- **Local visual panel**: inspect account health, trends, top posts, topic distribution, compiled memory, and next-move signals with zero token use.
+- **Safe `/update` module**: checks for newer versions and can offer opt-in weekly update checks; it only fast-forwards clean repos and never overwrites local changes.
+- **Agent-generic packaging**: removes platform-specific install assumptions and exposes `AGENTS.md`, `SKILL.md`, and `agents/openai.yaml` for different agent environments.
+
+---
+
 ## Who It Is For
 
 - creators already posting on Threads who want a steadier content process
@@ -50,6 +63,15 @@ Compare actual results against the prediction and write the learning back into t
 ### `/refresh`
 Update `threads_daily_tracker.json` through the Threads API when available, or through an authenticated browser automation environment when API access is not available.
 
+### `/voice`
+Build a Brand Voice profile that is useful for drafting, not just descriptive. It combines engagement-weighted evidence, temporal shift, cognitive beliefs, tension pairs, anti-voice boundaries, and a `/draft` quick-reference pack.
+
+### `/panel`
+Open a local zero-token dashboard for account status, recent trends, top posts, topic distribution, post search, compiled memory, and next-move signals.
+
+### `/update`
+Check for newer versions and ask whether the user wants opt-in weekly update checks. Updates only run when the local repo is clean and can fast-forward safely.
+
 ---
 
 ## What Setup Produces
@@ -60,11 +82,16 @@ After `/setup`, the working directory typically contains:
 - `style_guide.md`
 - `concept_library.md`
 - `brand_voice.md` after `/voice`
+- `compiled/account_wiki.md`
+- `compiled/account_state.md`
+- `compiled/next_move_queue.md`
+- `compiled/post_feature_index.jsonl`
+- `compiled/voice_fingerprint.md` / `.json`
 - `posts_by_date.md`
 - `posts_by_topic.md`
 - `comments.md`
 
-The tracker is the canonical file. The rest exist to make the data easier to use and review.
+The tracker is the canonical file. Companion files and compiled memory are derived from it; they are useful runtime assets, not new sources of truth.
 
 ---
 
@@ -111,6 +138,20 @@ After a check, `/update` will proactively ask whether you want to enable weekly 
 ```
 
 This closes the loop and makes the next decision better.
+
+### Inspect account status first
+
+```text
+/panel
+```
+
+Or run locally:
+
+```bash
+python scripts/panel_server.py --open
+```
+
+The panel is useful before spending tokens on deeper analysis.
 
 ---
 
